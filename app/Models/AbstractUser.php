@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Musonza\Chat\Models\Message;
 use Musonza\Chat\Traits\Messageable;
 
 abstract class AbstractUser extends Model
@@ -18,4 +19,6 @@ abstract class AbstractUser extends Model
     }
 
     abstract public static function fromRequest(array $payload): AbstractUser;
+
+    abstract public function consume(Message $message): void;
 }

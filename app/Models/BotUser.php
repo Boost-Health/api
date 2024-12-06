@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Log;
+use Musonza\Chat\Models\Message;
+
 class BotUser extends AbstractUser
 {
     protected $casts = [
@@ -23,5 +26,10 @@ class BotUser extends AbstractUser
         $user->bot()->create(['name' => 'Bot', 'meta' => ['llm' => 'GPT-4o']]);
 
         return $bot;
+    }
+
+    public function consume(Message $message): void
+    {
+        Log::info('bot:user:consume', $message->toArray());
     }
 }

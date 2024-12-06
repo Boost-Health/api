@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Api\Channels\Telegram;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 class WebhookController extends Controller
 {
-    public static const SET_WEBHOOK = false;
+    public const SET_WEBHOOK = false;
 
     public function __invoke(string $token, Request $request)
     {
