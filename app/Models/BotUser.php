@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Log;
+use App\Jobs\ProcessMessageJob;
 use Musonza\Chat\Models\Message;
 
 class BotUser extends AbstractUser
@@ -30,6 +30,6 @@ class BotUser extends AbstractUser
 
     public function consume(Message $message): void
     {
-        Log::info('bot:user:consume', $message->toArray());
+        ProcessMessageJob::dispatch($message);
     }
 }
