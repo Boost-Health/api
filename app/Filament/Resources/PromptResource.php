@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\PromptCode;
 use App\Filament\Resources\PromptResource\Pages;
 use App\Models\Prompt;
 use Filament\Forms;
@@ -20,13 +21,15 @@ class PromptResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->maxLength(255),
+                Forms\Components\Select::make('code')
+                    ->options(PromptCode::getAsOptions())
+                    ->required(),
                 Forms\Components\TextInput::make('description')
                     ->maxLength(255),
                 Forms\Components\Textarea::make('prompt')
                     ->columnSpanFull()
-                    ->rows(10),
+                    ->rows(10)
+                    ->required(),
             ]);
     }
 
@@ -34,7 +37,7 @@ class PromptResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('code')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),

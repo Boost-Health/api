@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Musonza\Chat\Models\Message;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramUser extends AbstractUser
 {
@@ -44,6 +44,9 @@ class TelegramUser extends AbstractUser
 
     public function consume(Message $message): void
     {
-        Log::info('telegram:user:consume', $message->toArray());
+        Telegram::sendMessage([
+            'chat_id' => $this->telegram_chat_id,
+            'text' => $message->body,
+        ]);
     }
 }
