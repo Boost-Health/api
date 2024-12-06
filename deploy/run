@@ -2,10 +2,9 @@
 set -e
 
 usermod -a -G www-data root
-php /var/www/html/artisan config:cache
-php /var/www/html/artisan cache:clear
-php /var/www/html/artisan view:clear
-php /var/www/html/artisan route:clear
+php /var/www/html/artisan optimize
+php /var/www/html/artisan filament:optimize
+php /var/www/html/artisan icons:cache
 php /var/www/html/artisan migrate --force
 php /var/www/html/artisan queue:restart
 
