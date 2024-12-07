@@ -2,11 +2,15 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "The boost health API",
+    "keywords": [
+        "Boost",
+        "Health"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "echolabsdev/prism": "^0.20.0",
         "filament/filament": "^3.2",
         "irazasyed/telegram-bot-sdk": "^3.14",
         "laravel/framework": "^11.31",

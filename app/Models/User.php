@@ -68,4 +68,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return Str::endsWith($this->email, 'boost.com');
     }
+
+    public function markAsOnboarded()
+    {
+        $this->update(['is_onboarded' => true]);
+    }
 }
