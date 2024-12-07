@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Channels\Telegram;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 class SetWebhookController extends Controller
@@ -16,6 +17,7 @@ class SetWebhookController extends Controller
                 'message' => 'Request successful',
                 'data' => [
                     'webhook_url' => $webhookUrl,
+                    'http_test' => Http::get('https://pages.onepipe.io/health')->json(),
                 ],
             ]);
         }
