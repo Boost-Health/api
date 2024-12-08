@@ -104,6 +104,7 @@ final class RegisterFlowChart extends BaseFlowChart
             null,
             [
                 sprintf('Alright. That\'s about it for now. Thank you %s!', $this->user->first_name),
+                'You can now ask me Personal health and wellness questions. I will try my best to assist you and may connect you to a doctor if need be.',
             ],
             ['lifestyle' => $this->message->body]
         );
