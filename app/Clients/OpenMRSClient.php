@@ -30,7 +30,7 @@ class OpenMRSClient
         $payload = [
             'identifiers' => [
                 [
-                    'identifier' => (string) $user->id,
+                    'identifier' => sprintf('USER-%s', $user->id),
                     'identifierType' => '05a29f94-c0ed-11e2-94be-8c13b969e334',
                     'location' => '58c57d25-8d39-41ab-8422-108a0c277d98',
                     'preferred' => true,
