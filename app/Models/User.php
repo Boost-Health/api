@@ -34,6 +34,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'meta' => 'json',
         ];
     }
 
@@ -67,10 +68,5 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return Str::endsWith($this->email, 'boost.com');
-    }
-
-    public function markAsOnboarded()
-    {
-        $this->update(['is_onboarded' => true]);
     }
 }

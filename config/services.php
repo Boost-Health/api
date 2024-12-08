@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'open-mrs' => [
+        'base_url' => env('OPEN_MRS_BASE_URL', 'https://pw8u28crwx.us-east-2.awsapprunner.com/openmrs/ws/rest/v1'),
+        'username' => env('OPEN_MRS_USERNAME', 'admin'),
+        'password' => env('OPEN_MRS_USERNAME', 'Admin123'),
+    ],
 ];

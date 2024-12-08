@@ -2,7 +2,12 @@
 
 namespace App\FlowCharts;
 
+use App\Clients\OpenMRSClient;
 use App\Objects\FlowChartNextObject;
+use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class RegisterFlowChart extends BaseFlowChart
 {
@@ -22,23 +27,38 @@ final class RegisterFlowChart extends BaseFlowChart
 
     protected function gender(): FlowChartNextObject
     {
+        $gender = str_contains(strtolower($this->message->body), 'f') ? 'F' : 'M';
+
         return new FlowChartNextObject(
-            'age',
+            'birthDate',
             [
-                'Awesome. How about your age?',
+                'Awesome. How about your Date of birth? e.g 1990-12-05',
             ],
-            ['gender' => $this->message->body]
+            ['gender' => $gender]
         );
     }
 
-    protected function age(): FlowChartNextObject
+    protected function birthDate(): FlowChartNextObject
     {
+        try {
+            Carbon::parse($this->message->body, 'Y-m-d');
+        } catch (Throwable $th) {
+            Log::error('flow-chart:register', ['error' => $th->getMessage(), 'step' => 'birthDate']);
+
+            return new FlowChartNextObject(
+                'birthDate',
+                [
+                    'Please enter your date of birth in format Y-m-d, eg 1990-10-20',
+                ]
+            );
+        }
+
         return new FlowChartNextObject(
             'medicalConditions',
             [
                 'Do you currently have any known medical conditions or allergies? You can reply me No if you do not have, otherwise please tell me about it',
             ],
-            ['age' => $this->message->body]
+            ['birthDate' => $this->message->body]
         );
     }
 
@@ -58,7 +78,7 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             'end',
             [
-                'Do you have any lifestyle habits I should be aware of? Smoking? Frequency exercise? Sitting a lot? Give me an idea about your lifestyle',
+                'Do you have any lifestyle habits I should be aware of? Smoking? Frequently exercise? Sitting a lot? Give me an idea about your lifestyle',
             ],
             ['medications' => $this->message->body]
         );
@@ -66,7 +86,19 @@ final class RegisterFlowChart extends BaseFlowChart
 
     protected function end(): FlowChartNextObject
     {
-        $this->user->markAsOnboarded();
+        try {
+            $response = app(OpenMRSClient::class)->createPatient($this->user, $this->conversation);
+            $this->user->update([
+                'is_onboarded' => true,
+                'open_mrs_patient_uuid' => Arr::get($response->json(), 'uuid'),
+                'meta' => [
+                    'create_patient_status_code' => $response->status(),
+                    'create_patient_response' => $response->json(),
+                ],
+            ]);
+        } catch (Throwable $th) {
+            Log::error('flowchart:register:error', ['message' => $th->getMessage()]);
+        }
 
         return new FlowChartNextObject(
             null,
