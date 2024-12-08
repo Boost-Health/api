@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum PromptCode: string
 {
-    case ONBOARD_NEW_USERS = 'ONBOARD_NEW_USERS';
+    case MEDICAL_HELP = 'MEDICAL_HELP';
 
     public static function getAsOptions(): array
     {

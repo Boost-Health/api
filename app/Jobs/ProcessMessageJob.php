@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\FlowCharts\BaseFlowChart;
-use App\FlowCharts\DefaultFlowChart;
+use App\FlowCharts\PersonalHealthFlowChart;
 use App\FlowCharts\RegisterFlowChart;
 use App\Models\BotUser;
 use App\Objects\MessageObject;
@@ -26,7 +26,7 @@ class ProcessMessageJob implements ShouldQueue
         /** @var BaseFlowChart $flowChart */
         $flowChart = new $flowChartClass($this->message->sender->user, $this->message);
         if ($this->message->sender->user->is_onboarded && $flowChart instanceof RegisterFlowChart) {
-            $flowChart = new DefaultFlowChart($this->message->sender->user, $this->message);
+            $flowChart = new PersonalHealthFlowChart($this->message->sender->user, $this->message);
         }
 
         $response = $flowChart->next();
