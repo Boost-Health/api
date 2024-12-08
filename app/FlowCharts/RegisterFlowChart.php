@@ -41,7 +41,7 @@ final class RegisterFlowChart extends BaseFlowChart
     protected function birthDate(): FlowChartNextObject
     {
         try {
-            Carbon::parse($this->message->body, 'Y-m-d');
+            Carbon::createFromFormat('Y-m-d', $this->message->body);
         } catch (Throwable $th) {
             Log::error('flow-chart:register', ['error' => $th->getMessage(), 'step' => 'birthDate']);
 

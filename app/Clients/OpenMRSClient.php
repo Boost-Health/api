@@ -38,7 +38,7 @@ class OpenMRSClient
             ],
             'person' => [
                 'gender' => Arr::get($data, 'gender', 'M'),
-                'age' => (int) Carbon::parse($birthDate)->age,
+                'age' => (int) Carbon::createFromFormat('Y-m-d', $birthDate)->age,
                 'birthdate' => (string) $birthDate,
                 'birthdateEstimated' => false,
                 'dead' => false,
