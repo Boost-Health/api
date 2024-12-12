@@ -27,14 +27,17 @@ final class RegisterFlowChart extends BaseFlowChart
 
     protected function gender(): FlowChartNextObject
     {
-        $gender = str_contains(strtolower($this->message->body), 'f') ? 'F' : 'M';
+        $gender = strtolower(trim($this->message->body));
+        if (! in_array($gender, ['m', 'male', 'f', 'female'])) {
+            return new FlowChartNextObject('gender', ['Please reply with Male or Female 😑']);
+        }
 
         return new FlowChartNextObject(
             'birthDate',
             [
                 'Awesome. How about your Date of birth? e.g 1990-12-05',
             ],
-            ['gender' => $gender]
+            ['gender' => str_contains($gender, 'f') ? 'F' : 'M']
         );
     }
 
