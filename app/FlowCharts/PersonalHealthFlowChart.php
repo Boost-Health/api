@@ -8,6 +8,8 @@ use App\Models\Prompt;
 use App\Models\User;
 use App\Notifications\NotifyDoctorNotification;
 use App\Objects\FlowChartNextObject;
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Support\Facades\Log;
@@ -24,15 +26,12 @@ final class PersonalHealthFlowChart extends BaseFlowChart
     public function init(): FlowChartNextObject
     {
         $messages = self::getFormattedMessagesForPrism($this->conversation, self::MAXIMUM_NUMBER_OF_RECENT_MESSAGES_FOR_CONTEXT);
+        $response = Prism::text()
+            ->using(Provider::OpenAI, 'gpt-4o')
+            ->withSystemPrompt(Prompt::for(PromptCode::MEDICAL_HELP))
+            ->withMessages($messages)
+            ->generate();
 
-        // $response = Prism::text()
-        //     ->using(Provider::OpenAI, 'gpt-4o')
-        //     ->withSystemPrompt(Prompt::for(PromptCode::MEDICAL_HELP))
-        //     ->withMessages($messages)
-        //     ->generate();
-        $response = (object) ['text' => 'REQUIRES_HUMAN'];
-
-        $responses = [$response->text];
         if ($commandCallback = $this->getCommandCallback($response->text)) {
             $callbackResponse = $this->{$commandCallback}();
             if ($callbackResponse) {
@@ -71,6 +70,8 @@ final class PersonalHealthFlowChart extends BaseFlowChart
     {
         if ($doctor = User::availableDoctor()) {
             $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
+
+            return null;
         }
 
         Log::warning("personal:health:doctors:busy:{$this->conversation->id}");
