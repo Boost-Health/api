@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\UserType;
 use App\Filament\Resources\DoctorResource\Pages;
 use App\Models\User;
 use Filament\Forms;
@@ -23,12 +24,7 @@ class DoctorResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('type', 'doctor');
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        return $data + ['type' => 'doctor', 'is_onboarded' => true];
+        return parent::getEloquentQuery()->where('type', UserType::DOCTOR);
     }
 
     public static function form(Form $form): Form

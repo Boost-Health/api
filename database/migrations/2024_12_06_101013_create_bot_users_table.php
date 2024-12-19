@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserType;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,10 +21,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        $user = User::updateOrCreate(['is_bot' => true], [
+        $user = User::updateOrCreate(['type' => UserType::BOT], [
             'first_name' => 'Bot',
             'last_name' => 'Man',
-            'is_bot' => true,
+            'type' => UserType::BOT,
         ]);
 
         $user->bot()->create(['name' => 'Bot', 'meta' => ['llm' => 'GPT-4o']]);

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('phone')->nullable()->after('email');
-            $table->string('type')->default('user')->nullable()->after('is_bot');
+            $table->string('type')->default('user')->nullable()->after('meta');
             $table->boolean('is_available')->default(false)->nullable()->after('type');
+            $table->dropColumn('is_bot');
         });
     }
 
