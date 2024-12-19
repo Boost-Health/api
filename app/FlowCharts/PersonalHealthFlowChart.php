@@ -32,6 +32,8 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             ->withMessages($messages)
             ->generate();
 
+        $responses = [$response->text];
+
         if ($commandCallback = $this->getCommandCallback($response->text)) {
             $callbackResponse = $this->{$commandCallback}();
             if ($callbackResponse) {
