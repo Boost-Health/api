@@ -35,7 +35,7 @@ return [
         ],
     ],
     'open-mrs' => [
-        'base_url' => env('OPEN_MRS_BASE_URL', 'https://pw8u28crwx.us-east-2.awsapprunner.com/openmrs/ws/rest/v1'),
+        'base_url' => env('OPEN_MRS_BASE_URL', 'https://clinic.boosthealthinc.com/openmrs/ws/rest/v1'),
         'username' => env('OPEN_MRS_USERNAME', 'admin'),
         'password' => env('OPEN_MRS_USERNAME', 'Admin123'),
     ],
