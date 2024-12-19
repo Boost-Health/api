@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'resend'),
 
     /*
     |--------------------------------------------------------------------------
@@ -63,6 +63,7 @@ return [
 
         'resend' => [
             'transport' => 'resend',
+            'key' => env('RESEND_API_KEY', 're_Bm61GwRK_5YpXASFotZm4qG3hngA1gDma'),
         ],
 
         'sendmail' => [
@@ -109,8 +110,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'hello@notifications.boosthealthinc.com'),
+        'name' => env('MAIL_FROM_NAME', 'Notifications'),
     ],
 
 ];
