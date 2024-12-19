@@ -52,6 +52,7 @@ class NotifyDoctorNotification extends Notification
             ->using(Provider::OpenAI, 'gpt-4o')
             ->withSystemPrompt(Prompt::for(PromptCode::SUMMARIZE_CONVERSATION_FOR_DOCTOR))
             ->withMessages(PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20))
+            ->generate();
 
         return $response->text;
     }
