@@ -16,8 +16,14 @@ return new class extends Migration
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('email')->unique()->nullable();
+            $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
+            $table->boolean('is_onboarded')->default(false);
+            $table->string('open_mrs_patient_uuid')->nullable();
+            $table->json('meta')->nullable();
+            $table->string('type')->default('user');
+            $table->boolean('is_available')->default(false)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
