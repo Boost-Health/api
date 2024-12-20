@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Channels\Telegram\SetWebhookController;
 use App\Http\Controllers\Api\Channels\Telegram\WebhookController;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => response()->json([
@@ -16,3 +17,5 @@ Route::group(['prefix' => '/bot'], function () {
         Route::any('/{token}/webhook', WebhookController::class);
     });
 });
+
+Route::get('/log', fn () => Log::info('log:test', ['now' => now()]));

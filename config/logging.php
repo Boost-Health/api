@@ -88,8 +88,8 @@ return [
             'level' => env('LOG_LEVEL', 'info'),
             'handler' => SyslogUdpHandler::class,
             'handler_with' => [
-                'host' => 'logs5.papertrailapp.com',
-                'port' => '49643',
+                'host' => env('PAPERTRAIL_HOST'),
+                'port' => env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
