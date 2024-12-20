@@ -55,6 +55,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
     {
         return $conversation
             ->messages()
+            ->where('body', 'not like', 'REQUIRES_HUMAN')
             ->take($limit)
             ->orderByDesc('id')
             ->get()
