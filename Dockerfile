@@ -59,7 +59,7 @@ RUN composer dump-autoload --optimize --no-scripts
 
 RUN rm /etc/nginx/sites-enabled/default
 
-COPY ./deploy/nginx.conf /etc/nginx/nginx.conf
+# COPY ./deploy/nginx.conf /etc/nginx/nginx.conf
 COPY ./deploy/deploy.conf /etc/nginx/conf.d/default.conf
 
 RUN mv /usr/local/etc/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf.backup
