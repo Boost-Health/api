@@ -40,6 +40,8 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             }
         }
 
+        Log::info('personal:health:flow', ['response' => $responseText]);
+
         return new FlowChartNextObject('init', [$responseText]);
     }
 
