@@ -57,12 +57,27 @@ final class RegisterFlowChart extends BaseFlowChart
         }
 
         return new FlowChartNextObject(
-            'medicalConditions',
+            'phone',
             [
-                'Do you currently have any known medical conditions or allergies? You can reply me No if you do not have, otherwise please tell me about it',
+                'What is your phone number?',
             ],
             ['birthDate' => $this->message->body]
         );
+    }
+
+    protected function phone(): FlowChartNextObject
+    {
+        if (preg_match('/^(0\d{10}|234\d{10}|\+234\d{11})$/', $this->message->body)) {
+            return new FlowChartNextObject(
+                'medicalConditions',
+                [
+                    'Do you currently have any known medical conditions or allergies? You can reply me No if you do not have, otherwise please tell me about it',
+                ],
+                ['phone' => $this->message->body]
+            );
+        }
+
+        return new FlowChartNextObject('phone', ['Please enter a valid phone number. Eg 08100000000'], ['birthDate' => $this->message->body]);
     }
 
     protected function medicalConditions(): FlowChartNextObject
@@ -93,6 +108,7 @@ final class RegisterFlowChart extends BaseFlowChart
             $response = app(OpenMRSClient::class)->createPatient($this->user, $this->conversation);
             $this->user->update([
                 'is_onboarded' => true,
+                'phone' => Arr::get($this->conversation->data, 'phone'),
                 'open_mrs_patient_uuid' => Arr::get($response->json(), 'uuid'),
                 'meta' => [
                     'create_patient_status_code' => $response->status(),
