@@ -46,9 +46,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 WORKDIR /var/www/html
 
-# copy env file
-COPY ./.env.example .env
-
 # Install dependencies
 COPY composer.json composer.json
 COPY composer.lock composer.lock
