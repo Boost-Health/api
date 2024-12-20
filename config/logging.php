@@ -19,7 +19,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => env('LOG_CHANNEL', 'stdout'),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,11 +86,10 @@ return [
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'info'),
-            'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
+            'handler' => SyslogUdpHandler::class,
             'handler_with' => [
                 'host' => 'logs5.papertrailapp.com',
                 'port' => '49643',
-                'connectionString' => 'tls://logs5.papertrailapp.com:49643',
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
@@ -109,7 +108,7 @@ return [
         'stdout' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'warning'),
-            'handler' => JsonFormatter::class,
+            'handler' => StreamHandler::class,
             'formatter' => JsonFormatter::class,
             'with' => [
                 'stream' => 'php://stdout',

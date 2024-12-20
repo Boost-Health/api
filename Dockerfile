@@ -24,7 +24,9 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install  gd \
     && docker-php-ext-install  intl \
     && docker-php-ext-install  zip \
-    && docker-php-ext-install opcache
+    && docker-php-ext-install opcache \
+    && docker-php-ext-install sockets
+
 
 RUN pecl install excimer && \
     echo "extension=excimer.so" > "$PHP_INI_DIR/conf.d/docker-php-ext-excimer.ini" && \
