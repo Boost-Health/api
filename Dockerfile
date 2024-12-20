@@ -4,9 +4,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 RUN export PATH=$PATH":/usr/bin"
 RUN docker-php-ext-install pdo_mysql
 RUN apt-get update && apt-get install -y \
+    build-essential \
     libpq-dev \
     libpng-dev \
     libzip-dev \
+    zlib1g-dev \
+    pkg-config \
     libicu-dev \
     libmcrypt-dev \
     curl \
@@ -22,6 +25,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install  intl \
     && docker-php-ext-install  zip \
     && docker-php-ext-install opcache
+
+RUN pecl install excimer && \
+    echo "extension=excimer.so" > "$PHP_INI_DIR/conf.d/docker-php-ext-excimer.ini" && \
+    php -m | grep -i excimer
 
 ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS="0"
 
