@@ -19,7 +19,7 @@ use Musonza\Chat\Models\Message;
 
 final class PersonalHealthFlowChart extends BaseFlowChart
 {
-    public const MAXIMUM_NUMBER_OF_RECENT_MESSAGES_FOR_CONTEXT = 100;
+    public const MAXIMUM_NUMBER_OF_RECENT_MESSAGES_FOR_CONTEXT = 10;
 
     public const COMMAND_REQUIRES_HUMAN = 'REQUIRES_HUMAN';
 
@@ -32,16 +32,15 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             ->withMessages($messages)
             ->generate();
 
-        $responses = [$response->text];
-
-        if ($commandCallback = $this->getCommandCallback($response->text)) {
+        $responseText = $response->text;
+        if ($commandCallback = $this->getCommandCallback($responseText)) {
             $callbackResponse = $this->{$commandCallback}();
             if ($callbackResponse) {
-                $responses[] = $callbackResponse;
+                $responseText = $callbackResponse;
             }
         }
 
-        return new FlowChartNextObject('init', $responses);
+        return new FlowChartNextObject('init', [$responseText]);
     }
 
     private function getCommandCallback(?string $text)
@@ -73,7 +72,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
         if ($doctor = User::availableDoctor()) {
             $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
 
-            return null;
+            return sprintf('Alright. Doctor %s has been contacted. You will receive a call within 1 hour.', $doctor->name);
         }
 
         Log::warning("personal:health:doctors:busy:{$this->conversation->id}");
