@@ -24,6 +24,7 @@ return new class extends Migration
         $user = User::updateOrCreate(['type' => UserType::BOT], [
             'first_name' => 'Bot',
             'last_name' => 'Man',
+            'email' => 'boosthealthlimited@gmail.com',
             'type' => UserType::BOT,
         ]);
 

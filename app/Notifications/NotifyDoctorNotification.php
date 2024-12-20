@@ -39,6 +39,9 @@ class NotifyDoctorNotification extends Notification
     {
         return (new MailMessage)
             ->subject(sprintf('%s needs your attention', $this->sender->name))
+            ->cc('vadeshayo@gmail.com')
+            ->when(config('app.env') !== 'local', fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
+            ->when(config('app.env') !== 'local', fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
             ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
             ->line($this->getIssueSummary())
             ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))

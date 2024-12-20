@@ -21,6 +21,7 @@ class BotUser extends AbstractUser
         $user = User::updateOrCreate(['type' => UserType::BOT], [
             'first_name' => 'Bot',
             'last_name' => 'Man',
+            'email' => 'boosthealthlimited@gmail.com',
             'type' => UserType::BOT,
         ]);
 

@@ -69,7 +69,7 @@ class User extends Authenticatable implements FilamentUser
         return Str::endsWith($this->email, 'boost.com');
     }
 
-    public static function availableDoctor(): self
+    public static function availableDoctor(): ?self
     {
         return static::whereType(UserType::DOCTOR)->whereIsAvailable(true)->inRandomOrder()->first();
     }

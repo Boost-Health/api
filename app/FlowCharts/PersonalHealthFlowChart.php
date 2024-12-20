@@ -6,6 +6,7 @@ use App\Enums\PromptCode;
 use App\Models\BotUser;
 use App\Models\Prompt;
 use App\Models\User;
+use App\Notifications\NotifyAdminsOfUnavailableDoctorsNotification;
 use App\Notifications\NotifyDoctorNotification;
 use App\Objects\FlowChartNextObject;
 use EchoLabs\Prism\Enums\Provider;
@@ -77,6 +78,9 @@ final class PersonalHealthFlowChart extends BaseFlowChart
         }
 
         Log::warning("personal:health:doctors:busy:{$this->conversation->id}");
+        if ($user = User::whereEmail('boosthealthlimited@gmail.com')->first()) {
+            $user->notify(new NotifyAdminsOfUnavailableDoctorsNotification($this->user));
+        }
 
         return 'Sorry, All our Doctors are currently busy. Please try again later';
     }
