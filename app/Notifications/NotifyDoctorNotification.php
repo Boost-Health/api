@@ -39,7 +39,6 @@ class NotifyDoctorNotification extends Notification
     {
         return (new MailMessage)
             ->subject(sprintf('%s needs your attention', $this->sender->name))
-            ->salutation(sprintf('Hello %s', $notifiable->name))
             ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
             ->line($this->getIssueSummary())
             ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))
