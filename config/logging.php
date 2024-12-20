@@ -110,7 +110,7 @@ return [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'warning'),
             'handler' => JsonFormatter::class,
-            'formatter' => env('LOG_STDERR_FORMATTER'),
+            'formatter' => JsonFormatter::class,
             'with' => [
                 'stream' => 'php://stdout',
             ],
