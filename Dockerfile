@@ -30,10 +30,6 @@ RUN pecl install excimer && \
     echo "extension=excimer.so" > "$PHP_INI_DIR/conf.d/docker-php-ext-excimer.ini" && \
     php -m | grep -i excimer
 
-ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS="0"
-
-ADD ./deploy/opcache.ini "$PHP_INI_DIR/conf.d/opcache.ini"
-
 RUN apt-get install nano -y
 
 RUN apt-get install supervisor -y
@@ -59,7 +55,6 @@ RUN composer dump-autoload --optimize --no-scripts
 
 RUN rm /etc/nginx/sites-enabled/default
 
-# COPY ./deploy/nginx.conf /etc/nginx/nginx.conf
 COPY ./deploy/deploy.conf /etc/nginx/conf.d/default.conf
 
 RUN mv /usr/local/etc/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf.backup
