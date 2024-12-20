@@ -18,5 +18,14 @@ Route::group(['prefix' => '/bot'], function () {
     });
 });
 
-Route::get('/log', fn () => Log::error('test:log', ['context' => 'test']));
+Route::get('/log', function () {
+    Log::error('test:log', ['context' => 'test', 'config' => config('app')]);
+
+    return response()->json([
+        'app' => config('app'),
+        'logging' => config('logging'),
+        'env' => $_ENV,
+    ]);
+});
+
 Route::get('/exception', fn () => throw new \Exception('Testing Sentry'));
