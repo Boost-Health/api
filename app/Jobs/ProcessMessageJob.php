@@ -17,6 +17,8 @@ class ProcessMessageJob implements ShouldQueue
 {
     use Queueable;
 
+    protected $tries = 1;
+
     public function __construct(public readonly Message $message) {}
 
     public function handle(): void

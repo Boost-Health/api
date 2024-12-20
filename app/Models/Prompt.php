@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\PromptCode;
 use Dflydev\DotAccessData\Exception\DataException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class Prompt extends Model
 {
@@ -18,8 +17,6 @@ class Prompt extends Model
     public static function for(PromptCode $promptCode): string
     {
         if ($prompt = self::whereCode($promptCode)->first()) {
-            Log::warning('prompt', ['prompt' => $prompt->prompt]);
-
             return $prompt->prompt;
         }
 
