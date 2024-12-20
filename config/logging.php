@@ -3,6 +3,7 @@
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
 return [
@@ -84,8 +85,8 @@ return [
 
         'papertrail' => [
             'driver' => 'monolog',
-            'level' => 'info',
-            'handler' => JsonFormatter::class,
+            'level' => env('LOG_LEVEL', 'info'),
+            'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
             'handler_with' => [
                 'host' => 'logs5.papertrailapp.com',
                 'port' => '49643',
