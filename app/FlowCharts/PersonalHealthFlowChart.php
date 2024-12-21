@@ -52,20 +52,25 @@ final class PersonalHealthFlowChart extends BaseFlowChart
         };
     }
 
-    public static function getFormattedMessagesForPrism(Conversation $conversation, int $limit): array
+    public static function getFormattedMessagesForPrism(Conversation $conversation, int $limit, bool $raw = false): array
     {
-        return $conversation
+        $messages = $conversation
             ->messages()
             ->where('body', 'not like', 'REQUIRES_HUMAN')
             ->take($limit)
             ->orderByDesc('id')
             ->get()
-            ->sortBy('id')
-            ->map(function (Message $message) {
-                return $message->sender instanceof BotUser
-                    ? new AssistantMessage($message->body)
-                    : new UserMessage($message->body);
-            })
+            ->sortBy('id');
+
+        if ($raw) {
+            return $messages->toArray();
+        }
+
+        return $messages->map(function (Message $message) {
+            return $message->sender instanceof BotUser
+                ? new AssistantMessage($message->body)
+                : new UserMessage($message->body);
+        })
             ->toArray();
     }
 
@@ -79,6 +84,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
 
         Log::warning("personal:health:doctors:busy:{$this->conversation->id}");
         if ($user = User::whereEmail('boosthealthlimited@gmail.com')->first()) {
+            $user->notify(new NotifyDoctorNotification($this->conversation, $this->user));
             $user->notify(new NotifyAdminsOfUnavailableDoctorsNotification($this->user));
         }
 

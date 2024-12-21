@@ -11,6 +11,7 @@ class Consultation extends Model
 
     protected $casts = [
         'status' => ConsultationStatus::class,
+        'conversation' => 'json',
     ];
 
     public function user()

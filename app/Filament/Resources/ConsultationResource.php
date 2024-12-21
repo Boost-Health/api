@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Enums\ConsultationStatus;
 use App\Filament\Resources\ConsultationResource\Pages;
 use App\Models\Consultation;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -41,16 +40,18 @@ class ConsultationResource extends Resource
                     ->rows(10)
                     ->columnSpanFull(),
 
-                KeyValue::make('conversation')
-                    ->label('Conversation')
-                    ->nullable()
-                    ->columnSpanFull(),
-
                 Select::make('status')
                     ->label('Status')
                     ->options(ConsultationStatus::getAsOptions())
                     ->required()
                     ->columnSpanFull(),
+
+                Textarea::make('conversation')
+                    ->label('Conversation')
+                    ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                    ->nullable()
+                    ->columnSpanFull()
+                    ->rows(20),
             ]);
     }
 

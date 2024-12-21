@@ -2,8 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Enums\ConsultationStatus;
 use App\Enums\PromptCode;
 use App\FlowCharts\PersonalHealthFlowChart;
+use App\Models\Consultation;
 use App\Models\Prompt;
 use App\Models\User;
 use EchoLabs\Prism\Enums\Provider;
@@ -16,6 +18,8 @@ use Musonza\Chat\Models\Conversation;
 class NotifyDoctorNotification extends Notification
 {
     use Queueable;
+
+    public Consultation $consultation;
 
     /**
      * Create a new notification instance.
@@ -37,6 +41,12 @@ class NotifyDoctorNotification extends Notification
      */
     public function toMail(User $notifiable): MailMessage
     {
+        $this->consultation = Consultation::create([
+            'user_id' => $this->sender->id,
+            'doctor_id' => $notifiable->id,
+            'status' => $notifiable->isDoctor() ? ConsultationStatus::COMPLETED : ConsultationStatus::PENDING,
+        ]);
+
         return (new MailMessage)
             ->subject(sprintf('%s needs your attention', $this->sender->name))
             ->cc('vadeshayo@gmail.com')
@@ -55,6 +65,11 @@ class NotifyDoctorNotification extends Notification
             ->withSystemPrompt(Prompt::for(PromptCode::SUMMARIZE_CONVERSATION_FOR_DOCTOR))
             ->withMessages(PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20))
             ->generate();
+
+        $this->consultation->update([
+            'complaint' => $response->text,
+            'conversation' => PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20, true),
+        ]);
 
         return $response->text;
     }
