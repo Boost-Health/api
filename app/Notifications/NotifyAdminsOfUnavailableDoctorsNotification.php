@@ -34,10 +34,19 @@ class NotifyAdminsOfUnavailableDoctorsNotification extends Notification
         return (new MailMessage)
             ->subject(sprintf('[URGENT] %s needs a doctor\'s attention', $this->user->name))
             ->cc('vadeshayo@gmail.com')
-            ->when(config('app.env') !== 'local', fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
-            ->when(config('app.env') !== 'local', fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
+            ->when(static::shouldCopyOthers($this->user), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
+            ->when(static::shouldCopyOthers($this->user), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
             ->line('There are currently no doctors available at this time.')
             ->line(sprintf('To contact %s, Please call %s', $this->user->name, $this->user->phone ?? 'N/A'))
             ->line('Thank you!');
+    }
+
+    public static function shouldCopyOthers(User $user)
+    {
+        if ($user->phone === '08175020329') {
+            return false;
+        }
+
+        return config('app.env') !== 'local';
     }
 }

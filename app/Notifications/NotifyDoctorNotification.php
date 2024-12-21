@@ -50,8 +50,8 @@ class NotifyDoctorNotification extends Notification
         return (new MailMessage)
             ->subject(sprintf('%s needs your attention', $this->sender->name))
             ->cc('vadeshayo@gmail.com')
-            ->when(config('app.env') !== 'local', fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
-            ->when(config('app.env') !== 'local', fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
+            ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
+            ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
             ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
             ->line($this->getIssueSummary())
             ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))
@@ -66,10 +66,11 @@ class NotifyDoctorNotification extends Notification
             ->withMessages(PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20))
             ->generate();
 
-        $this->consultation->update([
-            'complaint' => $response->text,
-            'conversation' => PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20, true),
-        ]);
+        $this->consultation->update(['complaint' => $response->text]);
+
+        if (config('app.env') === 'local') {
+            $this->consultation->update(['conversation' => PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20, true)]);
+        }
 
         return $response->text;
     }
