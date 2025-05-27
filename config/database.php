@@ -62,17 +62,6 @@ return [
             ]) : [],
         ],
 
-        'd1' => [
-            'driver' => 'd1',
-            'prefix' => '',
-            'database' => env('CLOUDFLARE_D1_DATABASE_ID', ''),
-            'api' => 'https://api.cloudflare.com/client/v4',
-            'auth' => [
-                'token' => env('CLOUDFLARE_TOKEN', ''),
-                'account_id' => env('CLOUDFLARE_ACCOUNT_ID', ''),
-            ],
-        ],
-
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
