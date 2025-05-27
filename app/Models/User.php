@@ -56,7 +56,7 @@ class User extends Authenticatable implements FilamentUser
 
     public static function createFilamentUser()
     {
-        static::create([
+        static::updateOrCreate(['email' => 'admin@boost.com'], [
             'first_name' => 'Boost',
             'last_name' => 'Admin',
             'email' => 'admin@boost.com',
