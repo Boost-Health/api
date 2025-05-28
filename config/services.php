@@ -33,6 +33,11 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+        'bot' => [
+            'token' => env('SLACK_TOKEN', '74f90abc-5c3f-4fd8-9904-22129129f245'),
+            'patient_bot_base_url' => env('SLACK_PATIENT_BOT_BASE_URL', 'https://patient-slack-bot.onrender.com'),
+            'ai_bot_base_url' => env('SLACK_PATIENT_BOT_BASE_URL', 'https://ai-slack-bot-vy12.onrender.com'),
+        ]
     ],
     'open-mrs' => [
         'base_url' => env('OPEN_MRS_BASE_URL', 'https://clinic.boosthealthinc.com/openmrs/ws/rest/v1'),

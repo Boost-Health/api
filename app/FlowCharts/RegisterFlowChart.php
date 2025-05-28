@@ -3,6 +3,7 @@
 namespace App\FlowCharts;
 
 use App\Clients\OpenMRSClient;
+use App\Clients\SlackBotClient;
 use App\Objects\FlowChartNextObject;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -114,6 +115,17 @@ final class RegisterFlowChart extends BaseFlowChart
                     'create_patient_status_code' => $response->status(),
                     'create_patient_response' => $response->json(),
                 ],
+            ]);
+
+            $response = app(SlackBotClient::class)->patientRegister($this->user);
+            if ($response->failed()) {
+                throw new \RuntimeException('Could not create slack channel', $response->json());
+            }
+
+            $data = $response->json();
+            $this->user->update([
+                'slack_channel_id' => Arr::get($data, 'data.channel.id'),
+                'slack_channel_name' => Arr::get($data, 'data.channel.name'),
             ]);
         } catch (Throwable $th) {
             Log::error('flowchart:register:error', ['message' => $th->getMessage()]);

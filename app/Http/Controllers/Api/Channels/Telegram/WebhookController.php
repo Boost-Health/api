@@ -9,14 +9,11 @@ use App\Models\TelegramUser;
 use App\Objects\MessageObject;
 use App\Services\ConversationService;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
     public function __invoke(string $token, TelegramRequest $request, ConversationService $conversationService)
     {
-        Log::info('telegram:webhook', request()->all());
-
         $boostHealthToken = config('telegram.bots.BoostHealth.token');
         if ($token !== $boostHealthToken) {
             return response()->json(null, Response::HTTP_UNAUTHORIZED);

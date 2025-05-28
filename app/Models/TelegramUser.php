@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+
+/** @noinspection ALL */
 
 namespace App\Models;
 
