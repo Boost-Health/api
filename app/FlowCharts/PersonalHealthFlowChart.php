@@ -80,7 +80,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             $this->user->inviteToSlackChannel($doctor);
             $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
 
-            return sprintf('Alright. Doctor %s has been contacted. You will receive a call within 1 hour.', $doctor->name);
+            return sprintf('Alright. Doctor %s has been contacted. You will be contacted within an hour.', $doctor->name);
         }
 
         Log::warning("personal:health:doctors:busy:{$this->conversation->id}");
