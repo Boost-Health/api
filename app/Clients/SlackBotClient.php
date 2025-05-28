@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Http;
 
 class SlackBotClient
 {
-    public PendingRequest $patientBotHttp;
-    public PendingRequest $aiBotHttp;
+    private PendingRequest $patientBotHttp;
+    private PendingRequest $aiBotHttp;
 
     public function __construct(array $config)
     {

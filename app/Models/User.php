@@ -75,6 +75,11 @@ class User extends Authenticatable implements FilamentUser
         return static::whereType(UserType::DOCTOR)->whereIsAvailable(true)->inRandomOrder()->first();
     }
 
+    public function isBot(): bool
+    {
+        return $this->type === UserType::BOT;
+    }
+
     public function isDoctor(): bool
     {
         return $this->type === UserType::DOCTOR;
