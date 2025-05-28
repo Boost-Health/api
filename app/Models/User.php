@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Clients\SlackBotClient;
 use App\Enums\UserType;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable implements FilamentUser
@@ -83,5 +85,18 @@ class User extends Authenticatable implements FilamentUser
     public function isDoctor(): bool
     {
         return $this->type === UserType::DOCTOR;
+    }
+
+    public function inviteToSlackChannel(User $guest): void
+    {
+        if (blank($guest->slack_user_id)) {
+            throw new \RuntimeException('Guest does not have a slack user id', ['guest' => $guest]);
+        }
+
+        $response = app(SlackBotClient::class)->patientInvite($this, $guest);
+
+        if ($response->failed()) {
+            Log::error("slack:invite:{$this->id}:{$guest->id}:failed", $response->json());
+        }
     }
 }
