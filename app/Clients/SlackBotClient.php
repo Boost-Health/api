@@ -55,4 +55,14 @@ class SlackBotClient
         return $this->patientBotHttp->post('register', $payload);
     }
 
+    public function patientInvite(User $user, User $guest): Response
+    {
+        $payload = [
+            'channel_id' => $user->slack_channel_id,
+            'user_id' => $guest->slack_user_id
+        ];
+
+        return $this->patientBotHttp->post('invite', $payload);
+    }
+
 }

@@ -77,6 +77,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
     public function requiresHumanCallback()
     {
         if ($doctor = User::availableDoctor()) {
+            $this->user->inviteToSlackChannel($doctor);
             $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
 
             return sprintf('Alright. Doctor %s has been contacted. You will receive a call within 1 hour.', $doctor->name);
