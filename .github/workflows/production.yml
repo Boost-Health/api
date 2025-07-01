@@ -3,9 +3,7 @@ name: Production
 on:
   push:
     branches:
-      - master
-
-if: false
+      - disabled-branch-set-to-master-to-enable-this-action
 
 jobs:
   deploy:
