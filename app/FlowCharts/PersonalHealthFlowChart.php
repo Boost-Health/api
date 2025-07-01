@@ -9,14 +9,14 @@ use App\Models\User;
 use App\Notifications\NotifyAdminsOfUnavailableDoctorsNotification;
 use App\Notifications\NotifyDoctorNotification;
 use App\Objects\FlowChartNextObject;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Musonza\Chat\Models\Conversation;
 use Musonza\Chat\Models\Message;
+use Prism\Prism\Enums\Provider;
+use Prism\Prism\Prism;
+use Prism\Prism\ValueObjects\Messages\AssistantMessage;
+use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 final class PersonalHealthFlowChart extends BaseFlowChart
 {
@@ -44,7 +44,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
         return new FlowChartNextObject('init', [$responseText]);
     }
 
-    private function getCommandCallback(?string $text)
+    private function getCommandCallback(?string $text): ?string
     {
         return match (true) {
             Str::contains($text, self::COMMAND_REQUIRES_HUMAN, true) => 'requiresHumanCallback',
@@ -74,7 +74,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             ->toArray();
     }
 
-    public function requiresHumanCallback()
+    public function requiresHumanCallback(): string
     {
         if ($doctor = User::availableDoctor()) {
             $this->user->inviteToSlackChannel($doctor);
