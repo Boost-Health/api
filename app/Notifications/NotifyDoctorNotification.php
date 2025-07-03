@@ -54,7 +54,7 @@ class NotifyDoctorNotification extends Notification
             ->when(false && NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
             ->when(false && NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
             ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
-            ->line($this->sender->context)
+            ->markdown($this->sender->context)
             ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))
             ->line('Thank you!');
     }
