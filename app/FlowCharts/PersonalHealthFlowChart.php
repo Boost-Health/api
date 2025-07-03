@@ -36,6 +36,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             $callbackResponse = $this->{$commandCallback}();
             if ($callbackResponse) {
                 $responseText = $callbackResponse;
+                Log::info('callback:response', ['response' => $responseText]);
             }
         }
 
@@ -71,9 +72,11 @@ final class PersonalHealthFlowChart extends BaseFlowChart
     {
         GenerateUserContextJob::dispatch($this->conversation, $this->user);
 
+        Log::info("personal:health:doctors:before:");
         if ($doctor = User::availableDoctor()) {
+            Log::info("personal:health:doctors:found:{$doctor->id}");
             $this->user->inviteToSlackChannel($doctor);
-            $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
+//            $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
 
             return sprintf('Alright. Doctor %s has been contacted. You will be contacted within an hour.', $doctor->name);
         }
