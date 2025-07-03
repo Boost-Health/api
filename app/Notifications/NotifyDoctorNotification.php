@@ -19,6 +19,8 @@ class NotifyDoctorNotification extends Notification
 
     public Consultation $consultation;
 
+     public const NOTIFY_OTHER_ADMINS = false;
+
     /**
      * Create a new notification instance.
      */
@@ -51,8 +53,8 @@ class NotifyDoctorNotification extends Notification
         return (new MailMessage)
             ->subject(sprintf('%s needs your attention', $this->sender->name))
             ->cc('vadeshayo@gmail.com')
-            ->when(false && NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
-            ->when(false && NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
+            ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
+            ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
             ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
             ->markdown($this->sender->context)
             ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))

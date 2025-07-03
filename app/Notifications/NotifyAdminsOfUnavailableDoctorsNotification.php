@@ -41,12 +41,12 @@ class NotifyAdminsOfUnavailableDoctorsNotification extends Notification
             ->line('Thank you!');
     }
 
-    public static function shouldCopyOthers(User $user)
+    public static function shouldCopyOthers(User $user): bool
     {
-        if ($user->phone === '08175020329') {
+        if ($user->phone === '08175020329' || config('app.env') === 'local') {
             return false;
         }
 
-        return config('app.env') !== 'local';
+        return NotifyDoctorNotification::NOTIFY_OTHER_ADMINS;
     }
 }
