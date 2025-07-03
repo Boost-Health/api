@@ -28,7 +28,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
     {
         $messages = self::getFormattedMessagesForPrism($this->conversation, self::MAXIMUM_NUMBER_OF_RECENT_MESSAGES_FOR_CONTEXT);
         $response = Prism::text()
-            ->using(Provider::OpenAI, 'gpt-4o')
+            ->using(Provider::OpenAI, config('prism.providers.openai.model'))
             ->withSystemPrompt(Prompt::for(PromptCode::MEDICAL_HELP))
             ->withMessages($messages)
             ->asText();

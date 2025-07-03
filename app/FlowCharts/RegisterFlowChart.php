@@ -5,6 +5,7 @@ namespace App\FlowCharts;
 use App\Clients\OpenMRSClient;
 use App\Clients\SlackBotClient;
 use App\Enums\PromptCode;
+use App\Jobs\GenerateUserContextJob;
 use App\Models\Prompt;
 use App\Objects\FlowChartNextObject;
 use Carbon\Carbon;
@@ -20,7 +21,7 @@ final class RegisterFlowChart extends BaseFlowChart
     private function rewrite(string $statement): string
     {
         $response = Prism::text()
-            ->using(Provider::OpenAI, 'gpt-4o')
+            ->using(Provider::OpenAI, config('prism.providers.openai.model'))
             ->withSystemPrompt(sprintf('%s %s', Prompt::for(PromptCode::REWRITE), $statement))
             ->asText();
 
@@ -125,6 +126,8 @@ final class RegisterFlowChart extends BaseFlowChart
     {
         try {
             $this->createOpenMRSUser();
+            dispatch(new GenerateUserContextJob($this->conversation, $this->user))->onConnection('sync');
+
             $this->user->update(['is_onboarded' => true, 'phone' => Arr::get($this->conversation->data, 'phone')]);
 
             $response = app(SlackBotClient::class)->patientRegister($this->user);
