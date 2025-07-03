@@ -3,10 +3,8 @@
 namespace App\Notifications;
 
 use App\Enums\ConsultationStatus;
-use App\Enums\PromptCode;
-use App\FlowCharts\PersonalHealthFlowChart;
+use App\Jobs\GenerateUserContextJob;
 use App\Models\Consultation;
-use App\Models\Prompt;
 use App\Models\User;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
@@ -47,31 +45,17 @@ class NotifyDoctorNotification extends Notification
             'status' => $notifiable->isDoctor() ? ConsultationStatus::COMPLETED : ConsultationStatus::PENDING,
         ]);
 
+        $this->sender->refresh();
+        $this->consultation->update(['complaint' => $this->sender->context]);
+
         return (new MailMessage)
             ->subject(sprintf('%s needs your attention', $this->sender->name))
             ->cc('vadeshayo@gmail.com')
             ->when(false && NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
             ->when(false && NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
             ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
-            ->line($this->getIssueSummary())
+            ->line($this->sender->context)
             ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))
             ->line('Thank you!');
-    }
-
-    public function getIssueSummary()
-    {
-        $response = Prism::text()
-            ->using(Provider::OpenAI, 'gpt-4o')
-            ->withSystemPrompt(Prompt::for(PromptCode::SUMMARIZE_CONVERSATION_FOR_DOCTOR))
-            ->withMessages(PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20))
-            ->generate();
-
-        $this->consultation->update(['complaint' => $response->text]);
-
-        if (config('app.env') === 'local') {
-            $this->consultation->update(['conversation' => PersonalHealthFlowChart::getFormattedMessagesForPrism($this->conversation, 20, true)]);
-        }
-
-        return $response->text;
     }
 }

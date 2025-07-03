@@ -3,6 +3,7 @@
 namespace App\FlowCharts;
 
 use App\Enums\PromptCode;
+use App\Jobs\GenerateUserContextJob;
 use App\Models\BotUser;
 use App\Models\Prompt;
 use App\Models\User;
@@ -20,17 +21,14 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 final class PersonalHealthFlowChart extends BaseFlowChart
 {
-    public const MAXIMUM_NUMBER_OF_RECENT_MESSAGES_FOR_CONTEXT = 10;
-
     public const COMMAND_REQUIRES_HUMAN = 'REQUIRES_HUMAN';
 
     public function init(): FlowChartNextObject
     {
-        $messages = self::getFormattedMessagesForPrism($this->conversation, self::MAXIMUM_NUMBER_OF_RECENT_MESSAGES_FOR_CONTEXT);
         $response = Prism::text()
             ->using(Provider::OpenAI, config('prism.providers.openai.model'))
-            ->withSystemPrompt(Prompt::for(PromptCode::MEDICAL_HELP))
-            ->withMessages($messages)
+            ->withSystemPrompt(Prompt::for(PromptCode::MEDICAL_HELP, ['existing_user_context' => $this->user->context]))
+            ->withMessages($this->getFormattedMessagesForPrism())
             ->asText();
 
         $responseText = $response->text;
@@ -52,19 +50,14 @@ final class PersonalHealthFlowChart extends BaseFlowChart
         };
     }
 
-    public static function getFormattedMessagesForPrism(Conversation $conversation, int $limit, bool $raw = false): array
+    private function getFormattedMessagesForPrism(): array
     {
-        $messages = $conversation
+        $messages = $this
+            ->conversation
             ->messages()
             ->where('body', 'not like', 'REQUIRES_HUMAN')
-            ->take($limit)
-            ->orderByDesc('id')
-            ->get()
-            ->sortBy('id');
-
-        if ($raw) {
-            return $messages->toArray();
-        }
+            ->where('id', '>', $this->user->context_last_generated_chat_message_id)
+            ->get();
 
         return $messages->map(function (Message $message) {
             return $message->sender instanceof BotUser
@@ -76,6 +69,8 @@ final class PersonalHealthFlowChart extends BaseFlowChart
 
     public function requiresHumanCallback(): string
     {
+        GenerateUserContextJob::dispatch($this->conversation, $this->user);
+
         if ($doctor = User::availableDoctor()) {
             $this->user->inviteToSlackChannel($doctor);
             $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));

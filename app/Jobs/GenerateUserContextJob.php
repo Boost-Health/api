@@ -24,13 +24,15 @@ class GenerateUserContextJob implements ShouldQueue
 
     public function handle(): void
     {
-        $prompt = Prompt::for(PromptCode::GENERATE_USER_CONTEXT);
-        $existingContext = $this->user->context ?? "<existing_context>EMPTY</existing_context>";
         $messages = $this->getFormattedMessagesForContext();
+        $prompt = Prompt::for(PromptCode::GENERATE_USER_CONTEXT, [
+            'existing_context' => $this->user->context ?: 'EMPTY',
+            'messages' => $messages
+        ]);
 
         $response = Prism::text()
             ->using(Provider::OpenAI, config('prism.providers.openai.model'))
-            ->withSystemPrompt("{$prompt} \n\n{$existingContext}\n\n<messages>\n{$messages}\n</messages>")
+            ->withSystemPrompt($prompt)
             ->asText();
 
         $this->user->update([
@@ -48,11 +50,9 @@ class GenerateUserContextJob implements ShouldQueue
             ->where('body', 'not like', 'REQUIRES_HUMAN')
             ->when(
                 $this->user->context_last_generated_chat_message_id > 0,
-                fn ($query) => $query->where('id', '>=', $this->user->context_last_generated_chat_message_id)
+                fn ($query) => $query->where('id', '>', $this->user->context_last_generated_chat_message_id)
             )
-            ->orderByDesc('id')
-            ->get()
-            ->sortBy('id');
+            ->get();
 
         return $messages->map(function (Message $message) {
             return $message->sender instanceof BotUser
