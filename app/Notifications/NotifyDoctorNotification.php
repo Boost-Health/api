@@ -51,7 +51,6 @@ class NotifyDoctorNotification extends Notification
             ]);
 
             $this->sender->refresh();
-            Log::info("notification:sender:{$this->sender->id}", ['context' => $this->sender->context]);
 
             $this->consultation->update(['complaint' => $this->sender->context]);
 

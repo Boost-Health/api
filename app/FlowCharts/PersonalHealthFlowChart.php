@@ -2,6 +2,7 @@
 
 namespace App\FlowCharts;
 
+use App\Clients\SlackBotClient;
 use App\Enums\PromptCode;
 use App\Jobs\GenerateUserContextJob;
 use App\Models\BotUser;
@@ -10,7 +11,6 @@ use App\Models\User;
 use App\Notifications\NotifyAdminsOfUnavailableDoctorsNotification;
 use App\Notifications\NotifyDoctorNotification;
 use App\Objects\FlowChartNextObject;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Musonza\Chat\Models\Message;
 use Prism\Prism\Enums\Provider;
@@ -35,7 +35,6 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             $callbackResponse = $this->{$commandCallback}();
             if ($callbackResponse) {
                 $responseText = $callbackResponse;
-                Log::info('callback:response', ['response' => $responseText]);
             }
         }
 
@@ -71,16 +70,14 @@ final class PersonalHealthFlowChart extends BaseFlowChart
     {
         GenerateUserContextJob::dispatch($this->conversation, $this->user);
 
-        Log::info("personal:health:doctors:before:");
         if ($doctor = User::availableDoctor()) {
-            Log::info("personal:health:doctors:found:{$doctor->id}");
             $this->user->inviteToSlackChannel($doctor);
             $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
+            app(SlackBotClient::class)->aiMessage($this->user, $this->user->refresh()->context);
 
             return sprintf('Alright. Doctor %s has been contacted. You will be contacted within an hour.', $doctor->name);
         }
 
-        Log::warning("personal:health:doctors:busy:{$this->conversation->id}");
         if ($user = User::whereEmail('boosthealthlimited@gmail.com')->first()) {
             $user->notify(new NotifyDoctorNotification($this->conversation, $this->user));
             $user->notify(new NotifyAdminsOfUnavailableDoctorsNotification($this->user));
