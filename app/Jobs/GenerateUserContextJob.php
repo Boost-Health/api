@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Clients\SlackBotClient;
 use App\Enums\PromptCode;
 use App\Models\BotUser;
 use App\Models\Prompt;
@@ -17,7 +18,7 @@ class GenerateUserContextJob implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(private readonly Conversation $conversation, private readonly User $user)
+    public function __construct(private readonly Conversation $conversation, private readonly User $user, private readonly bool $notifySlack = false)
     {
 
     }
@@ -40,6 +41,10 @@ class GenerateUserContextJob implements ShouldQueue
             'context_last_generated_chat_message_id' => $this->conversation->last_message()->first()->id,
             'context_last_generated_at' => now()
         ]);
+
+        if ($this->notifySlack && $this->user->slack_channel_id) {
+            app(SlackBotClient::class)->aiMessage($this->user, sprintf('```%s```', $this->user->fresh()->context));
+        }
     }
 
     private function getFormattedMessagesForContext(): string

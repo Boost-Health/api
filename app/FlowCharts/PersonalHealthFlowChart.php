@@ -68,12 +68,11 @@ final class PersonalHealthFlowChart extends BaseFlowChart
 
     public function requiresHumanCallback(): string
     {
-        GenerateUserContextJob::dispatch($this->conversation, $this->user);
+        GenerateUserContextJob::dispatch($this->conversation, $this->user, true);
 
         if ($doctor = User::availableDoctor()) {
             $this->user->inviteToSlackChannel($doctor);
             $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
-            app(SlackBotClient::class)->aiMessage($this->user, $this->user->refresh()->context);
 
             return sprintf('Alright. Doctor %s has been contacted. You will be contacted within an hour.', $doctor->name);
         }
