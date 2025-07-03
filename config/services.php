@@ -35,8 +35,8 @@ return [
         ],
         'bot' => [
             'token' => env('SLACK_TOKEN', '74f90abc-5c3f-4fd8-9904-22129129f245'),
-            'patient_bot_base_url' => env('SLACK_PATIENT_BOT_BASE_URL', 'https://tangy-army-87.webhook.cool'),
-            'ai_bot_base_url' => env('SLACK_PATIENT_BOT_BASE_URL', 'https://tangy-army-87.webhook.cool'),
+            'patient_bot_base_url' => env('SLACK_PATIENT_BOT_BASE_URL', 'https://patient-slack-bot.apps.boosthealth.care'),
+            'ai_bot_base_url' => env('SLACK_PATIENT_BOT_BASE_URL', 'https://ai-slack-bot.apps.boosthealth.care'),
         ]
     ],
     'open-mrs' => [
