@@ -22,7 +22,7 @@ final class RegisterFlowChart extends BaseFlowChart
     {
         $response = Prism::text()
             ->using(Provider::OpenAI, config('prism.providers.openai.model'))
-            ->withSystemPrompt(sprintf('%s %s', Prompt::for(PromptCode::REWRITE), $statement))
+            ->withSystemPrompt(Prompt::for(PromptCode::REWRITE, ['statement' => $statement]))
             ->asText();
 
         return $response->text;
