@@ -40,6 +40,7 @@ return [
         ]
     ],
     'open-mrs' => [
+        'enabled' => env('OPEN_MRS_ENABLED', 0),
         'base_url' => env('OPEN_MRS_BASE_URL', 'https://clinic.boosthealthinc.com/openmrs/ws/rest/v1'),
         'username' => env('OPEN_MRS_USERNAME', 'admin'),
         'password' => env('OPEN_MRS_USERNAME', 'Admin123'),

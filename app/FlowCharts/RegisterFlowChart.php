@@ -4,24 +4,42 @@ namespace App\FlowCharts;
 
 use App\Clients\OpenMRSClient;
 use App\Clients\SlackBotClient;
+use App\Enums\PromptCode;
+use App\Models\Prompt;
 use App\Objects\FlowChartNextObject;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Prism\Prism\Enums\Provider;
+use Prism\Prism\Prism;
+use RuntimeException;
 use Throwable;
 
 final class RegisterFlowChart extends BaseFlowChart
 {
+    private function rewrite(string $statement): string
+    {
+        $response = Prism::text()
+            ->using(Provider::OpenAI, 'gpt-4o')
+            ->withSystemPrompt(sprintf('%s %s', Prompt::for(PromptCode::REWRITE), $statement))
+            ->asText();
+
+        return $response->text;
+    }
     public function init(): FlowChartNextObject
     {
+        $message = $this->rewrite(
+            sprintf(
+                "Hello %s! I'm here to help you manage your health and wellness. To get started, could you share some basic information about yourself? This will help me provide personalized advice. Please answer as much as you're comfortable with 😀",
+                $this->user->first_name
+            )
+        );
+
         return new FlowChartNextObject(
             'gender',
             [
-                sprintf(
-                    "Hello %s! I'm here to help you manage your health and wellness. To get started, could you share some basic information about yourself? This will help me provide personalized advice. Please answer as much as you're comfortable with 😀",
-                    $this->user->first_name
-                ),
-                'Lets start with your Gender. I do like to know if you are Male or Female?',
+                $message,
+                $this->rewrite('Lets start with your Gender. I do like to know if you are Male or Female?'),
             ]
         );
     }
@@ -36,7 +54,7 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             'birthDate',
             [
-                'Awesome. How about your Date of birth? e.g 1990-12-05',
+                $this->rewrite('Awesome. How about your Date of birth? e.g 1990-12-05'),
             ],
             ['gender' => str_contains($gender, 'f') ? 'F' : 'M']
         );
@@ -72,7 +90,7 @@ final class RegisterFlowChart extends BaseFlowChart
             return new FlowChartNextObject(
                 'medicalConditions',
                 [
-                    'Do you currently have any known medical conditions or allergies? You can reply me No if you do not have, otherwise please tell me about it',
+                    $this->rewrite('Do you currently have any known medical conditions or allergies? You can reply me No if you do not have, otherwise please tell me about it'),
                 ],
                 ['phone' => $this->message->body]
             );
@@ -86,7 +104,7 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             'medications',
             [
-                'Are you currently on any medications? If No, just reply me no, otherwise feel free to tell me about the medications, perhaps their names if you remember',
+                $this->rewrite('Are you currently on any medications? If No, just reply me no, otherwise feel free to tell me about the medications, perhaps their names if you remember'),
             ],
             ['medicalConditions' => $this->message->body]
         );
@@ -97,7 +115,7 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             'end',
             [
-                'Do you have any lifestyle habits I should be aware of? Smoking? Frequently exercise? Sitting a lot? Give me an idea about your lifestyle',
+                $this->rewrite('Do you have any lifestyle habits I should be aware of? Smoking? Frequently exercise? Sitting a lot? Give me an idea about your lifestyle'),
             ],
             ['medications' => $this->message->body]
         );
@@ -106,20 +124,12 @@ final class RegisterFlowChart extends BaseFlowChart
     protected function end(): FlowChartNextObject
     {
         try {
-            $response = app(OpenMRSClient::class)->createPatient($this->user, $this->conversation);
-            $this->user->update([
-                'is_onboarded' => true,
-                'phone' => Arr::get($this->conversation->data, 'phone'),
-                'open_mrs_patient_uuid' => Arr::get($response->json(), 'uuid'),
-                'meta' => [
-                    'create_patient_status_code' => $response->status(),
-                    'create_patient_response' => $response->json(),
-                ],
-            ]);
+            $this->createOpenMRSUser();
+            $this->user->update(['is_onboarded' => true, 'phone' => Arr::get($this->conversation->data, 'phone')]);
 
             $response = app(SlackBotClient::class)->patientRegister($this->user);
             if ($response->failed()) {
-                throw new \RuntimeException('Could not create slack channel', $response->json());
+                throw new RuntimeException('Could not create slack channel', $response->json());
             }
 
             $data = $response->json();
@@ -134,10 +144,26 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             null,
             [
-                sprintf('Alright. That\'s about it for now. Thank you %s!', $this->user->first_name),
-                'You can now ask me Personal health and wellness questions. I will try my best to assist you and may connect you to a doctor if need be.',
+                $this->rewrite(sprintf('Alright. That\'s about it for now. Thank you %s!', $this->user->first_name)),
+                $this->rewrite('You can now ask me Personal health and wellness questions. I will try my best to assist you and may connect you to a doctor if need be.'),
             ],
             ['lifestyle' => $this->message->body]
         );
+    }
+
+    protected function createOpenMRSUser(): void
+    {
+        if ((int) config('services.open-mrs.enabled') === 0) {
+            return;
+        }
+
+        $response = app(OpenMRSClient::class)->createPatient($this->user, $this->conversation);
+        $this->user->update([
+            'open_mrs_patient_uuid' => Arr::get($response->json(), 'uuid'),
+            'meta' => [
+                'create_patient_status_code' => $response->status(),
+                'create_patient_response' => $response->json(),
+            ],
+        ]);
     }
 }

@@ -57,7 +57,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(TelegramUser::class);
     }
 
-    public static function createFilamentUser()
+    public static function createFilamentUser(): void
     {
         static::updateOrCreate(['email' => 'admin@boost.com'], [
             'first_name' => 'Boost',

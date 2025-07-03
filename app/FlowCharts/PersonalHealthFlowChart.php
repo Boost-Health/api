@@ -31,7 +31,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
             ->using(Provider::OpenAI, 'gpt-4o')
             ->withSystemPrompt(Prompt::for(PromptCode::MEDICAL_HELP))
             ->withMessages($messages)
-            ->generate();
+            ->asText();
 
         $responseText = $response->text;
         if ($commandCallback = $this->getCommandCallback($responseText)) {

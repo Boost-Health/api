@@ -6,6 +6,7 @@ enum PromptCode: string
 {
     case MEDICAL_HELP = 'MEDICAL_HELP';
     case SUMMARIZE_CONVERSATION_FOR_DOCTOR = 'SUMMARIZE_CONVERSATION_FOR_DOCTOR';
+    case REWRITE = 'REWRITE';
 
     public static function getAsOptions(): array
     {
