@@ -12,7 +12,6 @@ use App\Notifications\NotifyDoctorNotification;
 use App\Objects\FlowChartNextObject;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Musonza\Chat\Models\Conversation;
 use Musonza\Chat\Models\Message;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Prism;
@@ -76,7 +75,7 @@ final class PersonalHealthFlowChart extends BaseFlowChart
         if ($doctor = User::availableDoctor()) {
             Log::info("personal:health:doctors:found:{$doctor->id}");
             $this->user->inviteToSlackChannel($doctor);
-//            $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
+            $doctor->notify(new NotifyDoctorNotification($this->conversation, $this->user));
 
             return sprintf('Alright. Doctor %s has been contacted. You will be contacted within an hour.', $doctor->name);
         }

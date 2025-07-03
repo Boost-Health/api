@@ -11,7 +11,9 @@ use EchoLabs\Prism\Prism;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use Musonza\Chat\Models\Conversation;
+use Throwable;
 
 class NotifyDoctorNotification extends Notification
 {
@@ -41,23 +43,32 @@ class NotifyDoctorNotification extends Notification
      */
     public function toMail(User $notifiable): MailMessage
     {
-        $this->consultation = Consultation::create([
-            'user_id' => $this->sender->id,
-            'doctor_id' => $notifiable->id,
-            'status' => $notifiable->isDoctor() ? ConsultationStatus::COMPLETED : ConsultationStatus::PENDING,
-        ]);
+        try {
+            $this->consultation = Consultation::create([
+                'user_id' => $this->sender->id,
+                'doctor_id' => $notifiable->id,
+                'status' => $notifiable->isDoctor() ? ConsultationStatus::COMPLETED : ConsultationStatus::PENDING,
+            ]);
 
-        $this->sender->refresh();
-        $this->consultation->update(['complaint' => $this->sender->context]);
+            $this->sender->refresh();
+            Log::info("notification:sender:{$this->sender->id}", ['context' => $this->sender->context]);
 
-        return (new MailMessage)
-            ->subject(sprintf('%s needs your attention', $this->sender->name))
-            ->cc('vadeshayo@gmail.com')
-            ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
-            ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
-            ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
-            ->markdown($this->sender->context)
-            ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))
-            ->line('Thank you!');
+            $this->consultation->update(['complaint' => $this->sender->context]);
+
+            return (new MailMessage)
+                ->subject(sprintf('%s needs your attention', $this->sender->name))
+                ->cc('vadeshayo@gmail.com')
+                ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('asiwajuakinadegoke@gmail.com'))
+                ->when(NotifyAdminsOfUnavailableDoctorsNotification::shouldCopyOthers($this->sender), fn ($mail) => $mail->cc('yvonne.elaigwu@gmail.com'))
+                ->line(sprintf("Please see summary of %s's request below:", $this->sender->name))
+                ->line($this->sender->context)
+                ->line(sprintf('To contact %s, Please call %s', $this->sender->name, $this->sender->phone ?? 'N/A'))
+                ->line('Thank you!');
+
+        } catch (Throwable $th) {
+            Log::error('notifications:notify-doctor', ['error' => $th->getMessage()]);
+        }
+
+        return new MailMessage();
     }
 }

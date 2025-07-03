@@ -81,6 +81,10 @@ class ConsultationResource extends Resource
                     ->tooltip(fn ($record) => $record->complaint)
                     ->placeholder('No complaint'),
 
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
+
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
