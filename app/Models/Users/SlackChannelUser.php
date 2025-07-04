@@ -28,6 +28,9 @@ class SlackChannelUser extends AbstractUser
 
     public function consume(Message $message): void
     {
-        $this->user->telegram->consume($message);
+        $clonedMessage = clone $message;
+        $clonedMessage->body = sprintf("[%s]\n%s", $message->sender->user->name, $message->body);
+
+        $this->user->telegram->consume($clonedMessage);
     }
 }
