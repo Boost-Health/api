@@ -78,6 +78,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->type === UserType::BOT;
     }
 
+    public function isNotBot(): bool
+    {
+        return ! $this->isBot();
+    }
+
     public function isDoctor(): bool
     {
         return $this->type === UserType::DOCTOR;

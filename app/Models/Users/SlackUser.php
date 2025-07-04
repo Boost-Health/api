@@ -29,6 +29,6 @@ class SlackUser extends AbstractUser
 
     public function consume(Message $message): void
     {
-        Log::info('slack-user:consume', $message->toArray());
+        Log::info("slack:user:{$this->user->id}:consume", $message->toArray());
     }
 }

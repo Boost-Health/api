@@ -54,7 +54,7 @@ class TelegramUser extends AbstractUser
         ];
 
         if (app()->environment('local')) {
-            Log::info('telegram:message', $messageObject);
+            Log::info("telegram:message:user:{$this->user->id}:sent", $messageObject);
 
             return;
         }

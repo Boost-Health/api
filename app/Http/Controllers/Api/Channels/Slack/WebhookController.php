@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Channels\Slack;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SlackRequest;
+use App\Http\Resources\ConversationResponseResource;
 use App\Models\Users\SlackChannelUser;
 use App\Models\Users\SlackUser;
 use App\Objects\MessageObject;
@@ -23,13 +24,7 @@ class WebhookController extends Controller
                 request()->all()
             ));
 
-            return response()->json([
-                'status' => 'Successful',
-                'message' => 'Request Successful',
-                'data' => [
-                    'conversation' => $conversation,
-                ],
-            ]);
+            return new ConversationResponseResource($conversation);
         } catch (Exception $e) {
             Log::error('slack:webhook:error', ['error' => $e->getMessage()]);
 

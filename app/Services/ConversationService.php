@@ -18,8 +18,7 @@ class ConversationService
             $conversation = ChatFacade::conversations()->between($messageObject->from, $messageObject->to)
                 ?? ChatFacade::createConversation([$messageObject->from, $messageObject->to])->makeDirect();
 
-            $messageObject->from->user->update(['active_conversation_id' => $conversation->id]);
-
+            $this->setActiveConversation($conversation, $messageObject);
             ChatFacade::message($messageObject->message)->from($messageObject->from)->to($conversation)->send();
 
             return $conversation;
@@ -28,5 +27,16 @@ class ConversationService
         }
 
         return new Conversation;
+    }
+
+    private function setActiveConversation(Conversation $conversation, MessageObject $messageObject): void
+    {
+        if ($messageObject->from->user->isNotBot()) {
+            $messageObject->from->user->update(['active_conversation_id' => $conversation->id]);
+        }
+
+        if ($messageObject->to->user->isNotBot()) {
+            $messageObject->to->user->update(['active_conversation_id' => $conversation->id]);
+        }
     }
 }
