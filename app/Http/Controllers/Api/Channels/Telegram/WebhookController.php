@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Channels\Telegram;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TelegramRequest;
-use App\Models\Users\BotUser;
 use App\Models\Users\TelegramUser;
 use App\Objects\MessageObject;
 use App\Services\ConversationService;
@@ -21,7 +20,7 @@ class WebhookController extends Controller
 
         $conversation = $conversationService->message(new MessageObject(
             TelegramUser::fromRequest(request()->all()),
-            BotUser::fromRequest(),
+            null,
             request('message.text'),
             request()->all()
         ));

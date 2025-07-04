@@ -18,6 +18,8 @@ class ConversationService
             $conversation = ChatFacade::conversations()->between($messageObject->from, $messageObject->to)
                 ?? ChatFacade::createConversation([$messageObject->from, $messageObject->to])->makeDirect();
 
+            $messageObject->from->user->update(['active_conversation_id' => $conversation->id]);
+
             ChatFacade::message($messageObject->message)->from($messageObject->from)->to($conversation)->send();
 
             return $conversation;

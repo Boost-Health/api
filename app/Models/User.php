@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Musonza\Chat\Models\Conversation;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -45,6 +46,11 @@ class User extends Authenticatable implements FilamentUser
     public function telegram(): HasOne
     {
         return $this->hasOne(TelegramUser::class);
+    }
+
+    public function activeConversation(): HasOne
+    {
+        return $this->hasOne(Conversation::class, 'id', 'active_conversation_id');
     }
 
     public static function createFilamentUser(): void
