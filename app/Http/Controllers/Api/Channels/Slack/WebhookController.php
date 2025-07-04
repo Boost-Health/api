@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Channels\Slack;
 
+use App\Enums\SlackEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SlackRequest;
 use App\Http\Resources\ConversationResponseResource;
@@ -14,21 +15,44 @@ use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
-    public function __invoke(SlackRequest $request, ConversationService $conversationService)
+    public function __invoke(SlackRequest $request)
     {
         try {
-            $conversation = $conversationService->message(new MessageObject(
-                SlackUser::fromRequest(request()->all()),
-                SlackChannelUser::fromRequest(request()->all()),
-                request('text'),
-                request()->all()
-            ));
-
-            return new ConversationResponseResource($conversation);
+            return match (request('event')) {
+                SlackEvent::PATIENT_REPLY->value => $this->patientConversation(),
+                SlackEvent::AI_MENTION->value => $this->aiMention(),
+                default => throw new Exception('Invalid event type.'),
+            };
         } catch (Exception $e) {
             Log::error('slack:webhook:error', ['error' => $e->getMessage()]);
 
             return response()->json(null, 500);
         }
+    }
+
+    protected function patientConversation(): ConversationResponseResource
+    {
+        $conversation = app(ConversationService::class)
+            ->message(new MessageObject(
+                SlackUser::fromRequest(request('message')),
+                SlackChannelUser::fromRequest(request('message')),
+                request('message.text'),
+                request('message')
+            ));
+
+        return new ConversationResponseResource($conversation);
+    }
+
+    protected function aiMention(): ConversationResponseResource
+    {
+        $conversation = app(ConversationService::class)
+            ->message(new MessageObject(
+                SlackUser::fromRequest(request('message')),
+                SlackChannelUser::fromRequest(request('message')),
+                request('message.text'),
+                request('message')
+            ));
+
+        return new ConversationResponseResource($conversation);
     }
 }
