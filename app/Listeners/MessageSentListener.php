@@ -20,10 +20,14 @@ class MessageSentListener
 
     private function notifySlack(MessageWasSent $event, $recipient): void
     {
+        $slackClient = app(SlackBotClient::class);
+
         if ($event->message->sender->user->isBot()) {
-            app(SlackBotClient::class)->aiMessage($recipient->user, $event->message->body);
-        } else {
-            app(SlackBotClient::class)->patientMessage($event->message->sender->user, $event->message->body);
+            $slackClient->aiMessage($recipient->user, $event->message->body);
+        }
+
+        if ($event->message->sender->user->isUser()) {
+            $slackClient->patientMessage($event->message->sender->user, $event->message->body);
         }
     }
 }

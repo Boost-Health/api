@@ -6,7 +6,6 @@ use App\Enums\UserType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Musonza\Chat\Models\Message;
 
 class SlackChannelUser extends AbstractUser
@@ -29,6 +28,6 @@ class SlackChannelUser extends AbstractUser
 
     public function consume(Message $message): void
     {
-        Log::info('slack-channel-user:consume', $message->toArray());
+        $this->user->telegram->consume($message);
     }
 }

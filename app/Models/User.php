@@ -77,6 +77,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->type === UserType::DOCTOR;
     }
 
+    public function isUser(): bool
+    {
+        return $this->type === UserType::USER;
+    }
+
     public function inviteToSlackChannel(User $guest): void
     {
         if (blank($guest->slack_user_id)) {

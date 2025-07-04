@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Musonza\Chat\Models\Message;
+use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramUser extends AbstractUser
@@ -46,17 +47,21 @@ class TelegramUser extends AbstractUser
 
     public function consume(Message $message): void
     {
-        $message = [
+        $messageObject = [
             'chat_id' => $this->telegram_chat_id,
             'text' => $message->body,
         ];
 
         if (app()->environment('local')) {
-            Log::info('telegram:message', $message);
+            Log::info('telegram:message', $messageObject);
 
             return;
         }
 
-        Telegram::sendMessage($message);
+        try {
+            Telegram::sendMessage($messageObject);
+        } catch (TelegramSDKException $e) {
+            Log::error('telegram:message:error', ['message' => $message->toArray(), 'error' => $e->getMessage()]);
+        }
     }
 }
