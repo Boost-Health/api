@@ -7,6 +7,7 @@ enum PromptCode: string
     case MEDICAL_HELP = 'MEDICAL_HELP';
     case REWRITE = 'REWRITE';
     case GENERATE_USER_CONTEXT = 'GENERATE_USER_CONTEXT';
+    case AI_MENTION_CHECK_CONVERSATION_END = 'AI_MENTION_CHECK_CONVERSATION_END';
 
     public static function getAsOptions(): array
     {

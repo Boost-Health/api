@@ -39,4 +39,15 @@ class ConversationService
             $messageObject->to->user->update(['active_conversation_id' => $conversation->id]);
         }
     }
+
+    public function endConversation(MessageObject $messageObject): void
+    {
+        if ($messageObject->from->user->isNotBot()) {
+            $messageObject->from->user->update(['active_conversation_id' => null]);
+        }
+
+        if ($messageObject->to->user->isNotBot()) {
+            $messageObject->to->user->update(['active_conversation_id' => null]);
+        }
+    }
 }
