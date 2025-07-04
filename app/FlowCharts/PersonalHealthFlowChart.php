@@ -2,12 +2,11 @@
 
 namespace App\FlowCharts;
 
-use App\Clients\SlackBotClient;
 use App\Enums\PromptCode;
 use App\Jobs\GenerateUserContextJob;
-use App\Models\BotUser;
 use App\Models\Prompt;
 use App\Models\User;
+use App\Models\Users\BotUser;
 use App\Notifications\NotifyAdminsOfUnavailableDoctorsNotification;
 use App\Notifications\NotifyDoctorNotification;
 use App\Objects\FlowChartNextObject;

@@ -25,7 +25,7 @@ class Prompt extends Model
                     $formattedContexts[] = sprintf("\n\n<%s>\n%s\n</%s>", $key, $value, $key);
                 }
 
-                $promptText.= implode("\n", $formattedContexts);
+                $promptText .= implode("\n", $formattedContexts);
             }
 
             return $promptText;

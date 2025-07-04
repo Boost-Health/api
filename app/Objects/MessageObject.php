@@ -3,7 +3,7 @@
 namespace App\Objects;
 
 use App\Enums\MessageType;
-use App\Models\AbstractUser;
+use App\Models\Users\AbstractUser;
 
 class MessageObject
 {

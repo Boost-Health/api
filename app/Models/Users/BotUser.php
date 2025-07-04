@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Users;
 
 use App\Enums\UserType;
 use App\Jobs\ProcessMessageJob;
+use App\Models\User;
 use Musonza\Chat\Models\Message;
 
 class BotUser extends AbstractUser

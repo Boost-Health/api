@@ -1,9 +1,8 @@
-<?php /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+<?php
 
-/** @noinspection ALL */
+namespace App\Models\Users;
 
-namespace App\Models;
-
+use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Musonza\Chat\Models\Message;

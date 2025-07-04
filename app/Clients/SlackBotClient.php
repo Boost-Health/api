@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 class SlackBotClient
 {
     private PendingRequest $patientBotHttp;
+
     private PendingRequest $aiBotHttp;
 
     public function __construct(array $config)
@@ -29,7 +30,7 @@ class SlackBotClient
     {
         $payload = [
             'channel_id' => $user->slack_channel_id,
-            'message' => $message
+            'message' => $message,
         ];
 
         return $http->post('message', $payload);
@@ -59,10 +60,9 @@ class SlackBotClient
     {
         $payload = [
             'channel_id' => $user->slack_channel_id,
-            'user_id' => $guest->slack_user_id
+            'user_id' => $guest->slack_user_id,
         ];
 
         return $this->patientBotHttp->post('invite', $payload);
     }
-
 }

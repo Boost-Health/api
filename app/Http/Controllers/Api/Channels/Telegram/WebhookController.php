@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Channels\Telegram;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TelegramRequest;
-use App\Models\BotUser;
-use App\Models\TelegramUser;
+use App\Models\Users\BotUser;
+use App\Models\Users\TelegramUser;
 use App\Objects\MessageObject;
 use App\Services\ConversationService;
 use Illuminate\Http\Response;

@@ -3,11 +3,8 @@
 namespace App\Notifications;
 
 use App\Enums\ConsultationStatus;
-use App\Jobs\GenerateUserContextJob;
 use App\Models\Consultation;
 use App\Models\User;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -21,7 +18,7 @@ class NotifyDoctorNotification extends Notification
 
     public Consultation $consultation;
 
-     public const NOTIFY_OTHER_ADMINS = false;
+    public const NOTIFY_OTHER_ADMINS = false;
 
     /**
      * Create a new notification instance.
@@ -68,6 +65,6 @@ class NotifyDoctorNotification extends Notification
             Log::error('notifications:notify-doctor', ['error' => $th->getMessage()]);
         }
 
-        return new MailMessage();
+        return new MailMessage;
     }
 }

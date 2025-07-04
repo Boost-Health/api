@@ -27,6 +27,7 @@ final class RegisterFlowChart extends BaseFlowChart
 
         return $response->text;
     }
+
     public function init(): FlowChartNextObject
     {
         $message = $this->rewrite(

@@ -4,7 +4,8 @@ namespace App\Models;
 
 use App\Clients\SlackBotClient;
 use App\Enums\UserType;
-use Database\Factories\UserFactory;
+use App\Models\Users\BotUser;
+use App\Models\Users\TelegramUser;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -18,21 +19,10 @@ use Illuminate\Support\Str;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $guarded = [];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',

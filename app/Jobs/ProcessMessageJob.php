@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\FlowCharts\BaseFlowChart;
 use App\FlowCharts\PersonalHealthFlowChart;
 use App\FlowCharts\RegisterFlowChart;
-use App\Models\BotUser;
+use App\Models\Users\BotUser;
 use App\Objects\MessageObject;
 use App\Services\ConversationService;
 use Illuminate\Contracts\Queue\ShouldQueue;

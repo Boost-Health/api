@@ -25,6 +25,6 @@ class ConversationService
             Log::error($e);
         }
 
-        return new Conversation();
+        return new Conversation;
     }
 }
