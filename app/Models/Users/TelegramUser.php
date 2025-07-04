@@ -50,6 +50,7 @@ class TelegramUser extends AbstractUser
         $messageObject = [
             'chat_id' => $this->telegram_chat_id,
             'text' => $message->body,
+            'parse_mode' => 'Markdown',
         ];
 
         if (app()->environment('local')) {
