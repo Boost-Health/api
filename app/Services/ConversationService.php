@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\FlowCharts\RegisterFlowChart;
 use App\Objects\MessageObject;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -42,6 +43,9 @@ class ConversationService
 
     public function endConversation(MessageObject $messageObject): void
     {
+        $messageObject->message = RegisterFlowChart::rewrite('The doctor has ended the consultation. Should you have any more medical questions, do not hesitate to message me.');
+        $this->message($messageObject);
+
         if ($messageObject->from->user->isNotBot()) {
             $messageObject->from->user->update(['active_conversation_id' => null]);
         }

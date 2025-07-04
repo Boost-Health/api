@@ -4,10 +4,10 @@ namespace App\FlowCharts;
 
 use App\Models\User;
 use App\Objects\FlowChartNextObject;
-use Exception;
 use Illuminate\Support\Arr;
 use Musonza\Chat\Models\Conversation;
 use Musonza\Chat\Models\Message;
+use RuntimeException;
 
 abstract class BaseFlowChart
 {
@@ -22,7 +22,7 @@ abstract class BaseFlowChart
     {
         $nextStep = Arr::get($this->conversation->data, '_next', 'init');
         if (! method_exists($this, $nextStep)) {
-            throw new Exception(sprintf('Method %s does not exist on FlowChart instance:%s', $nextStep, static::class));
+            throw new RuntimeException(sprintf('Method %s does not exist on FlowChart instance:%s', $nextStep, static::class));
         }
 
         /** @var FlowChartNextObject $response */

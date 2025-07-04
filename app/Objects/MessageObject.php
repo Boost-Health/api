@@ -10,7 +10,7 @@ class MessageObject
     public function __construct(
         public readonly AbstractUser $from,
         public AbstractUser $to,
-        public readonly string $message,
+        public string $message,
         public readonly array $meta = [],
         public readonly MessageType $type = MessageType::TEXT,
     ) {}

@@ -18,7 +18,7 @@ use Throwable;
 
 final class RegisterFlowChart extends BaseFlowChart
 {
-    private function rewrite(string $statement): string
+    public static function rewrite(string $statement): string
     {
         $response = Prism::text()
             ->using(Provider::OpenAI, config('prism.providers.openai.model'))
@@ -30,7 +30,7 @@ final class RegisterFlowChart extends BaseFlowChart
 
     public function init(): FlowChartNextObject
     {
-        $message = $this->rewrite(
+        $message = self::rewrite(
             sprintf(
                 "Hello %s! I'm here to help you manage your health and wellness. To get started, could you share some basic information about yourself? This will help me provide personalized advice. Please answer as much as you're comfortable with 😀",
                 $this->user->first_name
@@ -41,7 +41,7 @@ final class RegisterFlowChart extends BaseFlowChart
             'gender',
             [
                 $message,
-                $this->rewrite('Lets start with your Gender. I do like to know if you are Male or Female?'),
+                self::rewrite('Lets start with your Gender. I do like to know if you are Male or Female?'),
             ]
         );
     }
@@ -56,7 +56,7 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             'birthDate',
             [
-                $this->rewrite('Awesome. How about your Date of birth? e.g 1990-12-05'),
+                self::rewrite('Awesome. How about your Date of birth? e.g 1990-12-05'),
             ],
             ['gender' => str_contains($gender, 'f') ? 'F' : 'M']
         );
@@ -92,7 +92,7 @@ final class RegisterFlowChart extends BaseFlowChart
             return new FlowChartNextObject(
                 'medicalConditions',
                 [
-                    $this->rewrite('Do you currently have any known medical conditions or allergies? You can reply me No if you do not have, otherwise please tell me about it'),
+                    self::rewrite('Do you currently have any known medical conditions or allergies? You can reply me No if you do not have, otherwise please tell me about it'),
                 ],
                 ['phone' => $this->message->body]
             );
@@ -106,7 +106,7 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             'medications',
             [
-                $this->rewrite('Are you currently on any medications? If No, just reply me no, otherwise feel free to tell me about the medications, perhaps their names if you remember'),
+                self::rewrite('Are you currently on any medications? If No, just reply me no, otherwise feel free to tell me about the medications, perhaps their names if you remember'),
             ],
             ['medicalConditions' => $this->message->body]
         );
@@ -117,7 +117,7 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             'end',
             [
-                $this->rewrite('Do you have any lifestyle habits I should be aware of? Smoking? Frequently exercise? Sitting a lot? Give me an idea about your lifestyle'),
+                self::rewrite('Do you have any lifestyle habits I should be aware of? Smoking? Frequently exercise? Sitting a lot? Give me an idea about your lifestyle'),
             ],
             ['medications' => $this->message->body]
         );
@@ -148,8 +148,8 @@ final class RegisterFlowChart extends BaseFlowChart
         return new FlowChartNextObject(
             null,
             [
-                $this->rewrite(sprintf('Alright. That\'s about it for now. Thank you %s!', $this->user->first_name)),
-                $this->rewrite('You can now ask me Personal health and wellness questions. I will try my best to assist you and may connect you to a doctor if need be.'),
+                self::rewrite(sprintf('Alright. That\'s about it for now. Thank you %s!', $this->user->first_name)),
+                self::rewrite('You can now ask me Personal health and wellness questions. I will try my best to assist you and may connect you to a doctor if need be.'),
             ],
             ['lifestyle' => $this->message->body]
         );
