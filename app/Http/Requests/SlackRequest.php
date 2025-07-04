@@ -20,7 +20,6 @@ class SlackRequest extends FormRequest
             'message.team' => ['required'],
             'message.channel' => ['required'],
             'message.event_ts' => ['required'],
-            'message.channel_type' => ['required'],
         ];
     }
 }
