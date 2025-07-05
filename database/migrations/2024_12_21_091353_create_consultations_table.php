@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id')->references('id')->on('users');
             $table->integer('doctor_id')->references('id')->on('users')->nullable();
-            $table->text('complaint')->nullable();
             $table->timestamps();
         });
     }

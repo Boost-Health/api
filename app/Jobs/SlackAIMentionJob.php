@@ -3,7 +3,9 @@
 namespace App\Jobs;
 
 use App\Clients\SlackBotClient;
+use App\Enums\ConsultationStatus;
 use App\Enums\PromptCode;
+use App\Models\Consultation;
 use App\Models\Prompt;
 use App\Objects\MessageObject;
 use App\Services\ConversationService;
@@ -29,9 +31,9 @@ class SlackAIMentionJob implements ShouldQueue
     public function handle(): void
     {
         match (true) {
+            Str::contains(strtolower($this->message), 'prescription') => $this->handlePrescription(),
             $this->wantsToEndConversation() => $this->endConversation(),
             $this->wantsSlackID() => $this->sendSlackID(),
-            Str::contains(strtolower($this->message), 'prescription') => $this->handlePrescription(),
             default => $this->reply('Sorry, I do not understand your message.'),
         };
     }
@@ -74,7 +76,25 @@ class SlackAIMentionJob implements ShouldQueue
         }
     }
 
-    private function handlePrescription(): void {}
+    private function handlePrescription(): void
+    {
+        $consultation = Consultation::query()
+            ->whereUserId($this->messageObject->to->user->id)
+            ->whereDoctorId($this->messageObject->from->user->id)
+            ->whereStatus(ConsultationStatus::PENDING)
+            ->orderByDesc('id')
+            ->first();
+
+        if (blank($consultation)) {
+            $this->log('no:consultation');
+
+            return;
+        }
+
+        $consultation->update(['prescription' => $this->message]);
+
+        $this->reply('Prescription received. An agent has been notified and will action your request immediately. You can mention @ai and let it know this consultation is complete.');
+    }
 
     private function reply(string $message): void
     {

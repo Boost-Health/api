@@ -16,8 +16,6 @@ class NotifyDoctorNotification extends Notification
 {
     use Queueable;
 
-    public Consultation $consultation;
-
     public const NOTIFY_OTHER_ADMINS = false;
 
     /**
@@ -41,15 +39,13 @@ class NotifyDoctorNotification extends Notification
     public function toMail(User $notifiable): MailMessage
     {
         try {
-            $this->consultation = Consultation::create([
+            Consultation::updateOrCreate(['user_id' => $this->sender->id, 'status' => ConsultationStatus::PENDING], [
                 'user_id' => $this->sender->id,
                 'doctor_id' => $notifiable->id,
-                'status' => $notifiable->isDoctor() ? ConsultationStatus::COMPLETED : ConsultationStatus::PENDING,
+                'status' => ConsultationStatus::PENDING,
             ]);
 
             $this->sender->refresh();
-
-            $this->consultation->update(['complaint' => $this->sender->context]);
 
             return (new MailMessage)
                 ->subject(sprintf('%s needs your attention', $this->sender->name))
