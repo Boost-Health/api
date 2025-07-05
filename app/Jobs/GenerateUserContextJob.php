@@ -26,6 +26,7 @@ class GenerateUserContextJob implements ShouldQueue
         $prompt = Prompt::for(PromptCode::GENERATE_USER_CONTEXT, [
             'existing_context' => $this->user->context ?: 'EMPTY',
             'messages' => $messages,
+            'date' => now()->format('Y-m-d'),
         ]);
 
         $response = Prism::text()
