@@ -62,7 +62,6 @@ class SlackAIMentionJob implements ShouldQueue
     private function endConversation(): void
     {
         app(ConversationService::class)->endConversation($this->messageObject);
-        $this->reply(sprintf("Alright <@%s> i'll let the Patient know the consultation has ended.", $this->messageObject->from->user->slack_user_id));
     }
 
     private function sendSlackID(): void
