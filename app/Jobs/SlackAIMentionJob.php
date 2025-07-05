@@ -7,11 +7,13 @@ use App\Enums\ConsultationStatus;
 use App\Enums\PromptCode;
 use App\Models\Consultation;
 use App\Models\Prompt;
+use App\Notifications\FreshDeskNotification;
 use App\Objects\MessageObject;
 use App\Services\ConversationService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Prism;
@@ -92,6 +94,7 @@ class SlackAIMentionJob implements ShouldQueue
         }
 
         $consultation->update(['prescription' => $this->message]);
+        Notification::route('mail', 'support@boosthealth.freshdesk.com')->notify(new FreshDeskNotification($consultation));
 
         $this->reply('Prescription received. An agent has been notified and will action your request immediately. You can mention me and let me know this consultation is complete.');
     }
