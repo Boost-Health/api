@@ -105,4 +105,17 @@ class User extends Authenticatable implements FilamentUser
             Log::error("slack:invite:{$this->id}:{$guest->id}:failed", $response->json());
         }
     }
+
+    public function removeFromSlackChannel(User $guest): void
+    {
+        if (blank($guest->slack_user_id)) {
+            throw new \RuntimeException('Guest does not have a slack user id', ['guest' => $guest]);
+        }
+
+        $response = app(SlackBotClient::class)->patientRemove($this, $guest);
+
+        if ($response->failed()) {
+            Log::error("slack:remove:{$this->id}:{$guest->id}:failed", $response->json());
+        }
+    }
 }

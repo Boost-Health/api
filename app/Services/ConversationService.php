@@ -52,6 +52,7 @@ class ConversationService
 
         if ($messageObject->to->user->isNotBot()) {
             $messageObject->to->user->update(['active_conversation_id' => null]);
+            $messageObject->to->user->removeFromSlackChannel($messageObject->from->user);
         }
     }
 }
