@@ -22,8 +22,8 @@ class SlackAIMentionJob implements ShouldQueue
 
     public function __construct(private readonly MessageObject $messageObject)
     {
-        // <@U08UWES6APJ> is the AI Bot
-        $this->message = trim(Str::replace('<@U08UWES6APJ>', '', $this->messageObject->message));
+        // <@U08TYENF57H> is the AI Bot
+        $this->message = trim(Str::replace('<@U08TYENF57H>', '', $this->messageObject->message));
     }
 
     public function handle(ConversationService $conversationService): void
