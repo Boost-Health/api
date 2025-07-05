@@ -93,7 +93,7 @@ class SlackAIMentionJob implements ShouldQueue
 
         $consultation->update(['prescription' => $this->message]);
 
-        $this->reply('Prescription received. An agent has been notified and will action your request immediately. You can mention @ai and let it know this consultation is complete.');
+        $this->reply('Prescription received. An agent has been notified and will action your request immediately. You can mention me and let me know this consultation is complete.');
     }
 
     private function reply(string $message): void
