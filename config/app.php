@@ -123,4 +123,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'freshdesk' => [
+        'enabled' => env('APP_FRESHDESK_ENABLED', true),
+        'email' => env('APP_FRESHDESK_EMAIL', 'support@boosthealth.freshdesk.com'),
+    ],
+
 ];

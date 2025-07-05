@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Prism;
+use Throwable;
 
 class SlackAIMentionJob implements ShouldQueue
 {
@@ -33,7 +34,7 @@ class SlackAIMentionJob implements ShouldQueue
     public function handle(): void
     {
         match (true) {
-            Str::contains(strtolower($this->message), 'prescription') => $this->handlePrescription(),
+            $this->wantsToSavePrescription() => $this->handlePrescription(),
             $this->wantsToEndConversation() => $this->endConversation(),
             $this->wantsSlackID() => $this->sendSlackID(),
             default => $this->reply('Sorry, I do not understand your message.'),
@@ -52,6 +53,11 @@ class SlackAIMentionJob implements ShouldQueue
         return Str::contains($response->text, 'TRUE');
     }
 
+    private function endConversation(): void
+    {
+        app(ConversationService::class)->endConversation($this->messageObject);
+    }
+
     private function wantsSlackID(): bool
     {
         $response = Prism::text()
@@ -64,11 +70,6 @@ class SlackAIMentionJob implements ShouldQueue
         return Str::contains($response->text, 'TRUE');
     }
 
-    private function endConversation(): void
-    {
-        app(ConversationService::class)->endConversation($this->messageObject);
-    }
-
     private function sendSlackID(): void
     {
         if ($slackUserId = Str::of($this->message)->match('/<@([A-Z0-9]+)>/')) {
@@ -78,25 +79,32 @@ class SlackAIMentionJob implements ShouldQueue
         }
     }
 
+    private function wantsToSavePrescription(): bool
+    {
+        return Str::contains(strtolower($this->message), 'prescription');
+    }
+
     private function handlePrescription(): void
     {
-        $consultation = Consultation::query()
-            ->whereUserId($this->messageObject->to->user->id)
-            ->whereDoctorId($this->messageObject->from->user->id)
-            ->whereStatus(ConsultationStatus::PENDING)
-            ->orderByDesc('id')
-            ->first();
+        try {
+            $consultation = Consultation::query()
+                ->whereUserId($this->messageObject->to->user->id)
+                ->whereDoctorId($this->messageObject->from->user->id)
+                ->whereStatus(ConsultationStatus::PENDING)
+                ->orderByDesc('id')
+                ->firstOrFail();
 
-        if (blank($consultation)) {
-            $this->log('no:consultation');
+            $consultation->update(['prescription' => $this->message]);
+            if (config('app.freshdesk.enabled')) {
+                Notification::route('mail', config('app.freshdesk.email'))->notify(new FreshDeskNotification($consultation));
+            }
 
-            return;
+            $this->reply('Prescription received. An agent has been notified and will action your request immediately. You can mention me and let me know this consultation is complete.');
+        } catch (Throwable $th) {
+            $this->log('consultation:error', ['error' => $th->getMessage()]);
+
+            $this->reply('An error occured while trying to process your prescription request. Please try again');
         }
-
-        $consultation->update(['prescription' => $this->message]);
-        Notification::route('mail', 'support@boosthealth.freshdesk.com')->notify(new FreshDeskNotification($consultation));
-
-        $this->reply('Prescription received. An agent has been notified and will action your request immediately. You can mention me and let me know this consultation is complete.');
     }
 
     private function reply(string $message): void
