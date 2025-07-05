@@ -26,10 +26,10 @@ class SlackAIMentionJob implements ShouldQueue
         $this->message = trim(Str::replace('<@U08TYENF57H>', '', $this->messageObject->message));
     }
 
-    public function handle(ConversationService $conversationService): void
+    public function handle(): void
     {
         match (true) {
-            $this->wantsToEndConversation() => $conversationService->endConversation($this->messageObject),
+            $this->wantsToEndConversation() => $this->endConversation(),
             $this->wantsSlackID() => $this->sendSlackID(),
             default => $this->reply('Sorry, I do not understand your message.'),
         };
@@ -57,6 +57,12 @@ class SlackAIMentionJob implements ShouldQueue
         $this->log('ask-for-slack-id', ['response' => $response->text]);
 
         return Str::contains($response->text, 'TRUE');
+    }
+
+    private function endConversation(): void
+    {
+        app(ConversationService::class)->endConversation($this->messageObject);
+        $this->reply(sprintf("Alright <@%s> i'll let the Patient know the consultation has ended.", $this->messageObject->from->user->slack_user_id));
     }
 
     private function sendSlackID(): void
