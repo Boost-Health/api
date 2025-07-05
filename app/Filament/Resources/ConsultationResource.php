@@ -6,8 +6,8 @@ use App\Enums\ConsultationStatus;
 use App\Enums\OrderType;
 use App\Filament\Resources\ConsultationResource\Pages;
 use App\Models\Consultation;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -43,10 +43,8 @@ class ConsultationResource extends Resource
                     ->options(ConsultationStatus::getAsOptions())
                     ->required(),
 
-                Textarea::make('prescription')
+                MarkdownEditor::make('prescription')
                     ->label('Prescription')
-                    ->nullable()
-                    ->rows(10)
                     ->columnSpanFull()
                     ->disabled(),
 
