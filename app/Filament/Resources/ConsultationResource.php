@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\ConsultationStatus;
+use App\Enums\OrderType;
 use App\Filament\Resources\ConsultationResource\Pages;
 use App\Models\Consultation;
 use Filament\Forms\Components\Select;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,20 +40,22 @@ class ConsultationResource extends Resource
                     ->label('Complaint')
                     ->nullable()
                     ->rows(10)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->readOnly(),
 
                 Select::make('status')
                     ->label('Status')
                     ->options(ConsultationStatus::getAsOptions())
-                    ->required()
-                    ->columnSpanFull(),
+                    ->required(),
 
-                Textarea::make('conversation')
-                    ->label('Conversation')
-                    ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
-                    ->nullable()
-                    ->columnSpanFull()
-                    ->rows(20),
+                Select::make('order_type')
+                    ->label('Order Type')
+                    ->options(OrderType::getAsOptions()),
+
+                TextInput::make('order_source')->label('Order Source')->nullable(),
+                TextInput::make('order_number')->label('Order Source')->nullable()->numeric(),
+                TextInput::make('order_total')->label('Order Source')->nullable()->numeric(),
+                TextInput::make('order_address')->label('Order Source')->nullable(),
             ]);
     }
 
@@ -75,11 +79,8 @@ class ConsultationResource extends Resource
                     ->sortable()
                     ->placeholder('Not assigned'),
 
-                TextColumn::make('complaint')
-                    ->label('Complaint')
-                    ->limit(50)
-                    ->tooltip(fn ($record) => $record->complaint)
-                    ->placeholder('No complaint'),
+                TextColumn::make('order_type')
+                    ->label('Order Type'),
 
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -96,6 +97,17 @@ class ConsultationResource extends Resource
                         'warning' => 'in-progress',
                     ])
                     ->placeholder('No status'),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -104,11 +116,12 @@ class ConsultationResource extends Resource
         return [
             'index' => Pages\ListConsultations::route('/'),
             'view' => Pages\ViewConsultation::route('/{record}'),
+            'edit' => Pages\EditConsultation::route('/{record}/edit'),
         ];
     }
 
     public static function canCreate(): bool
     {
-        return false;
+        return true;
     }
 }

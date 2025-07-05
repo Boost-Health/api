@@ -16,8 +16,6 @@ return new class extends Migration
             $table->integer('user_id')->references('id')->on('users');
             $table->integer('doctor_id')->references('id')->on('users')->nullable();
             $table->text('complaint')->nullable();
-            $table->json('conversation')->nullable();
-            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

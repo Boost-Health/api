@@ -31,6 +31,7 @@ class SlackAIMentionJob implements ShouldQueue
         match (true) {
             $this->wantsToEndConversation() => $this->endConversation(),
             $this->wantsSlackID() => $this->sendSlackID(),
+            Str::contains(strtolower($this->message), 'prescription') => $this->handlePrescription(),
             default => $this->reply('Sorry, I do not understand your message.'),
         };
     }
@@ -72,6 +73,8 @@ class SlackAIMentionJob implements ShouldQueue
             $this->reply('Could not find Slack ID in your message. Please make sure you mention the user and ask me something like: What is the Slack ID of @mention');
         }
     }
+
+    private function handlePrescription(): void {}
 
     private function reply(string $message): void
     {
