@@ -26,27 +26,29 @@ class ConsultationResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('id')->label('ID')->nullable()->disabled(fn (string $context) => $context === 'edit'),
+
                 TextInput::make('user_id')
                     ->label('User')
-                    ->formatStateUsing(fn ($record) => $record->user->name)
-                    ->required(),
+                    ->formatStateUsing(fn ($record) => $record?->user?->name)
+                    ->disabled(),
 
                 TextInput::make('doctor_id')
                     ->label('Doctor')
-                    ->formatStateUsing(fn ($record) => $record->user->name)
-                    ->nullable(),
-
-                Textarea::make('complaint')
-                    ->label('Complaint')
-                    ->nullable()
-                    ->rows(10)
-                    ->columnSpanFull()
-                    ->readOnly(),
+                    ->formatStateUsing(fn ($record) => $record?->user?->name)
+                    ->disabled(),
 
                 Select::make('status')
                     ->label('Status')
                     ->options(ConsultationStatus::getAsOptions())
                     ->required(),
+
+                Textarea::make('prescription')
+                    ->label('Prescription')
+                    ->nullable()
+                    ->rows(10)
+                    ->columnSpanFull()
+                    ->disabled(),
 
                 Select::make('order_type')
                     ->label('Order Type')
@@ -54,8 +56,8 @@ class ConsultationResource extends Resource
 
                 TextInput::make('order_source')->label('Order Source')->nullable(),
                 TextInput::make('order_number')->label('Order Source')->nullable()->numeric(),
-                TextInput::make('order_total')->label('Order Source')->nullable()->numeric(),
-                TextInput::make('order_address')->label('Order Source')->nullable(),
+                TextInput::make('order_total')->label('Order Total')->nullable()->numeric(),
+                TextInput::make('order_address')->label('Order Delivery Address')->nullable()->columnSpanFull(),
             ]);
     }
 
@@ -68,6 +70,11 @@ class ConsultationResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('user.name')
                     ->label('User')
                     ->searchable()
@@ -94,7 +101,7 @@ class ConsultationResource extends Resource
                         'primary' => 'pending',
                         'success' => 'completed',
                         'danger' => 'cancelled',
-                        'warning' => 'in-progress',
+                        'warning' => 'in_progress',
                     ])
                     ->placeholder('No status'),
             ])
