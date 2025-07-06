@@ -85,7 +85,8 @@ class ConsultationResource extends Resource
                     ->placeholder('Not assigned'),
 
                 TextColumn::make('order_type')
-                    ->label('Order Type'),
+                    ->label('Order Type')
+                    ->formatStateUsing(fn ($state) => str($state)->replace('_', ' ')->title()),
 
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -101,7 +102,8 @@ class ConsultationResource extends Resource
                         'danger' => 'cancelled',
                         'warning' => 'in_progress',
                     ])
-                    ->placeholder('No status'),
+                    ->placeholder('No status')
+                    ->formatStateUsing(fn ($state) => str($state->value)->replace('_', ' ')->title()),
             ])
             ->filters([
                 //
