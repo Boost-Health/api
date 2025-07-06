@@ -26,11 +26,11 @@ class FreshDeskNotification extends Notification
             ->line(sprintf('Consultation ID: %d', $this->consultation->id))
             ->line(sprintf('User Email: %ds', $this->consultation->user->email))
             ->line(sprintf('User Phone Number: %ds', $this->consultation->user->phone))
-            ->line('\n')
+            ->line("\n")
             ->line('Please see prescription below:')
-            ->line('\n')
+            ->line("\n")
             ->line($this->consultation->prescription)
-            ->line('\n')
+            ->line("\n")
             ->line('Please action immediately and update the consultation on the Admin');
     }
 }
