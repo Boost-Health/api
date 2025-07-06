@@ -36,7 +36,7 @@ class EndStaleDoctorConversationCommand extends Command
     private function check(User $doctor): void
     {
         $conversationId = $doctor->activeConversation->id;
-        $lastMessage = $doctor->activeConversation->last_message();
+        $lastMessage = $doctor->activeConversation->last_message;
         $doctorParticipant = $doctor->activeConversation->getParticipants()->filter(fn ($participant) => $participant->user->is($doctor))->first();
         $userParticipant = $doctor->activeConversation->getParticipants()->reject(fn ($participant) => $participant->user->is($doctor))->first();
 
