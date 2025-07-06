@@ -7,4 +7,5 @@ enum UserType: string
     case BOT = 'bot';
     case USER = 'user';
     case DOCTOR = 'doctor';
+    case AGENT = 'agent';
 }
