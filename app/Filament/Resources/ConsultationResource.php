@@ -53,7 +53,7 @@ class ConsultationResource extends Resource
                     ->options(OrderType::getAsOptions()),
 
                 TextInput::make('order_source')->label('Order Source')->nullable(),
-                TextInput::make('order_number')->label('Order Source')->nullable()->numeric(),
+                TextInput::make('order_number')->label('Order Number')->nullable()->numeric(),
                 TextInput::make('order_total')->label('Order Total')->nullable()->numeric(),
                 TextInput::make('order_address')->label('Order Delivery Address')->nullable()->columnSpanFull(),
             ]);
