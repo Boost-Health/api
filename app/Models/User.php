@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Musonza\Chat\Models\Conversation;
 
+/**
+ * @property mixed $activeConversation
+ */
 class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable;
