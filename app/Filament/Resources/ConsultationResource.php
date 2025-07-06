@@ -86,7 +86,7 @@ class ConsultationResource extends Resource
 
                 TextColumn::make('order_type')
                     ->label('Order Type')
-                    ->formatStateUsing(fn ($state) => str($state)->replace('_', ' ')->title()),
+                    ->formatStateUsing(fn ($state) => str($state->value)->replace('_', ' ')->title()),
 
                 TextColumn::make('created_at')
                     ->dateTime()
