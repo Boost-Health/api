@@ -20,17 +20,19 @@ class FreshDeskNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        $n = "\n\n";
+
         return (new MailMessage)
             ->subject(sprintf('%s Prescription from %s', $this->consultation->user->name, $this->consultation->doctor->name))
             ->cc('vadeshayo@gmail.com')
             ->line(sprintf('Consultation ID: %d', $this->consultation->id))
-            ->line(sprintf('User Email: %ds', $this->consultation->user->email))
-            ->line(sprintf('User Phone Number: %ds', $this->consultation->user->phone))
-            ->line("\n")
+            ->line(sprintf('User Email: %s', $this->consultation->user->email))
+            ->line(sprintf('User Phone Number: %s', $this->consultation->user->phone))
+            ->line($n)
             ->line('Please see prescription below:')
-            ->line("\n")
             ->line($this->consultation->prescription)
-            ->line("\n")
-            ->line('Please action immediately and update the consultation on the Admin');
+            ->line($n)
+            ->line('Please action immediately and update the consultation on the Admin')
+            ->line($n);
     }
 }
