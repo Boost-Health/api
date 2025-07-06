@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Hash;
 
 class AgentResource extends Resource
 {
@@ -21,6 +22,11 @@ class AgentResource extends Resource
     protected static ?string $label = 'Agent';
 
     protected static ?string $pluralLabel = 'Agents';
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isNotAgent();
+    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -35,6 +41,13 @@ class AgentResource extends Resource
                 Forms\Components\TextInput::make('last_name')->maxLength(255),
                 Forms\Components\TextInput::make('email')->email()->maxLength(255),
                 Forms\Components\TextInput::make('phone')->placeholder('+234XXXXXXXXXX')->maxLength(14),
+                Forms\Components\TextInput::make('password')
+                    ->label('Password')
+                    ->password()
+                    ->required(fn (string $context) => $context === 'create')
+                    ->dehydrateStateUsing(fn (string $state) => Hash::make($state))
+                    ->dehydrated(fn (?string $state) => filled($state))
+                    ->maxLength(255),
             ]);
     }
 

@@ -65,7 +65,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return Str::endsWith($this->email, 'boost.com');
+        return Str::endsWith($this->email, 'boost.com') || $this->type === UserType::AGENT;
     }
 
     public static function availableDoctor(): ?self
@@ -91,6 +91,16 @@ class User extends Authenticatable implements FilamentUser
     public function isUser(): bool
     {
         return $this->type === UserType::USER;
+    }
+
+    public function isAgent(): bool
+    {
+        return $this->type === UserType::AGENT;
+    }
+
+    public function isNotAgent(): bool
+    {
+        return ! $this->isAgent();
     }
 
     public function inviteToSlackChannel(User $guest): void

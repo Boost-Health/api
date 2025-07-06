@@ -22,6 +22,11 @@ class DoctorResource extends Resource
 
     protected static ?string $pluralLabel = 'Doctors';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isNotAgent();
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('type', UserType::DOCTOR);

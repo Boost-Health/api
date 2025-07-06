@@ -17,6 +17,11 @@ class PromptResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isNotAgent();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
