@@ -12,7 +12,7 @@ class EndStaleDoctorConversationCommand extends Command
 {
     private const NUMBER_OF_HOURS_TO_CHECK_FOR_STALE = 1;
 
-    protected $signature = 'app:end-stale-doctor-conversation-command';
+    protected $signature = 'app:conversations:stale:end';
 
     protected $description = 'Find stale conversations that a doctor is part of and end it';
 
